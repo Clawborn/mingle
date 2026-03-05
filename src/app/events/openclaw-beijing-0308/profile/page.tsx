@@ -19,21 +19,10 @@ const INTEREST_OPTIONS = [
 
 export default function ProfilePage() {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({
-    name: "", bio: "", lookingFor: "",
-    interests: [] as string[],
-    socials: {} as Record<string, string>,
-  });
+  const [form, setForm] = useState({ name: "", bio: "", lookingFor: "", interests: [] as string[], socials: {} as Record<string, string> });
   const [submitted, setSubmitted] = useState(false);
 
-  const toggleInterest = (i: string) => {
-    setForm(f => ({
-      ...f,
-      interests: f.interests.includes(i)
-        ? f.interests.filter(x => x !== i)
-        : [...f.interests, i],
-    }));
-  };
+  const toggleInterest = (i: string) => setForm(f => ({ ...f, interests: f.interests.includes(i) ? f.interests.filter(x => x !== i) : [...f.interests, i] }));
 
   if (submitted) {
     return (
@@ -54,14 +43,8 @@ export default function ProfilePage() {
             <div className="text-sm" style={{ color: "var(--text-muted)" }}>想认识：{form.lookingFor}</div>
           </div>
           <div className="flex flex-col gap-3">
-            <Link href="/events/openclaw-beijing-0308/live"
-              className="py-3 rounded-xl text-white font-semibold text-center" style={{ background: "var(--brand)" }}>
-              👀 进入 Agent 社交大厅
-            </Link>
-            <Link href="/events/openclaw-beijing-0308"
-              className="py-3 rounded-xl font-semibold text-center" style={{ border: "1px solid var(--border)" }}>
-              返回活动页面
-            </Link>
+            <Link href="/events/openclaw-beijing-0308/live" className="py-3 rounded-xl text-white font-semibold text-center" style={{ background: "var(--brand)" }}>👀 进入 Agent 社交大厅</Link>
+            <Link href="/events/openclaw-beijing-0308" className="py-3 rounded-xl font-semibold text-center" style={{ border: "1px solid var(--border)" }}>返回活动页面</Link>
           </div>
         </div>
       </div>
@@ -72,7 +55,7 @@ export default function ProfilePage() {
     <div className="min-h-screen" style={{ background: "var(--bg)" }}>
       <nav className="fixed top-0 w-full z-50 border-b" style={{ background: "var(--bg-secondary)", borderColor: "var(--border)" }}>
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/events/openclaw-beijing-0308" className="transition-colors flex items-center gap-2" style={{ color: "var(--text-muted)" }}>
+          <Link href="/events/openclaw-beijing-0308" className="flex items-center gap-2 transition-colors" style={{ color: "var(--text-muted)" }}>
             <span>←</span> 返回活动
           </Link>
           <ThemeToggle />
@@ -84,10 +67,8 @@ export default function ProfilePage() {
         <div className="flex items-center gap-2 mb-8">
           {[1, 2, 3].map(s => (
             <div key={s} className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all`}
-                style={{ background: step >= s ? "var(--brand)" : "var(--bg-secondary)", color: step >= s ? "white" : "var(--text-subtle)", border: `1px solid ${step >= s ? "var(--brand)" : "var(--border)"}` }}>
-                {s}
-              </div>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all"
+                style={{ background: step >= s ? "var(--brand)" : "var(--bg-secondary)", color: step >= s ? "white" : "var(--text-muted)", border: step >= s ? "none" : "1px solid var(--border)" }}>{s}</div>
               {s < 3 && <div className="h-0.5 w-12 transition-all" style={{ background: step > s ? "var(--brand)" : "var(--border)" }} />}
             </div>
           ))}
@@ -101,51 +82,40 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold mb-2">你是谁？</h1>
             <p className="mb-8" style={{ color: "var(--text-muted)" }}>这些信息会给你的 Agent 使用，帮它替你社交。</p>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm mb-2" style={{ color: "var(--text-muted)" }}>你的名字</label>
-                <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  placeholder="比如：杨天润"
-                  className="w-full px-4 py-3 rounded-xl outline-none transition-all"
-                  style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)", color: "var(--text)" }} />
-              </div>
-              <div>
-                <label className="block text-sm mb-2" style={{ color: "var(--text-muted)" }}>一句话介绍你自己</label>
-                <input type="text" value={form.bio} onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
-                  placeholder="比如：不写代码的 AI Builder"
-                  className="w-full px-4 py-3 rounded-xl outline-none transition-all"
-                  style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)", color: "var(--text)" }} />
-              </div>
-              <div>
-                <label className="block text-sm mb-2" style={{ color: "var(--text-muted)" }}>你想认识什么样的人？</label>
-                <textarea value={form.lookingFor} onChange={e => setForm(f => ({ ...f, lookingFor: e.target.value }))}
-                  placeholder="比如：想找工程师朋友一起做 AI 项目..."
-                  rows={3}
-                  className="w-full px-4 py-3 rounded-xl outline-none transition-all resize-none"
-                  style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)", color: "var(--text)" }} />
-              </div>
+              {[
+                { label: "你的名字", value: form.name, key: "name", placeholder: "比如：杨天润", type: "input" },
+                { label: "一句话介绍你自己", value: form.bio, key: "bio", placeholder: "比如：不写代码的 AI Builder", type: "input" },
+                { label: "你想认识什么样的人？", value: form.lookingFor, key: "lookingFor", placeholder: "比如：想找工程师朋友一起做 AI 项目...", type: "textarea" },
+              ].map(field => (
+                <div key={field.key}>
+                  <label className="block text-sm mb-2" style={{ color: "var(--text-muted)" }}>{field.label}</label>
+                  {field.type === "textarea" ? (
+                    <textarea value={field.value} onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))} placeholder={field.placeholder} rows={3}
+                      className="w-full px-4 py-3 rounded-xl focus:outline-none transition-all resize-none"
+                      style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--text)" }} />
+                  ) : (
+                    <input type="text" value={field.value} onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))} placeholder={field.placeholder}
+                      className="w-full px-4 py-3 rounded-xl focus:outline-none transition-all"
+                      style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--text)" }} />
+                  )}
+                </div>
+              ))}
             </div>
-            <button onClick={() => form.name && form.bio && setStep(2)}
-              disabled={!form.name || !form.bio}
+            <button onClick={() => form.name && form.bio && setStep(2)} disabled={!form.name || !form.bio}
               className="mt-8 w-full py-3 rounded-xl text-white font-semibold transition-all disabled:opacity-30"
-              style={{ background: "var(--brand)" }}>
-              下一步 →
-            </button>
+              style={{ background: "var(--brand)" }}>下一步 →</button>
           </div>
         )}
 
         {step === 2 && (
           <div>
             <h1 className="text-2xl font-bold mb-2">你的兴趣</h1>
-            <p className="mb-8" style={{ color: "var(--text-muted)" }}>选择你感兴趣的领域，Agent 会用这些来匹配。</p>
+            <p className="mb-8" style={{ color: "var(--text-muted)" }}>选择你感兴趣的领域，Agent 会用这些来匹配适合你的人。</p>
             <div className="flex flex-wrap gap-3 mb-8">
               {INTEREST_OPTIONS.map(i => (
                 <button key={i} onClick={() => toggleInterest(i)}
                   className="px-4 py-2 rounded-full text-sm font-medium transition-all"
-                  style={{
-                    background: form.interests.includes(i) ? "var(--agent-bg)" : "transparent",
-                    border: `1px solid ${form.interests.includes(i) ? "var(--agent)" : "var(--border)"}`,
-                    color: form.interests.includes(i) ? "var(--agent)" : "var(--text-muted)",
-                  }}>
+                  style={{ border: form.interests.includes(i) ? "1px solid var(--brand)" : "1px solid var(--border)", background: form.interests.includes(i) ? "rgba(232,93,74,0.15)" : "transparent", color: form.interests.includes(i) ? "var(--brand)" : "var(--text-muted)" }}>
                   {i}
                 </button>
               ))}
@@ -154,9 +124,7 @@ export default function ProfilePage() {
               <button onClick={() => setStep(1)} className="px-6 py-3 rounded-xl font-semibold" style={{ border: "1px solid var(--border)" }}>←</button>
               <button onClick={() => setStep(3)} disabled={form.interests.length === 0}
                 className="flex-1 py-3 rounded-xl text-white font-semibold transition-all disabled:opacity-30"
-                style={{ background: "var(--brand)" }}>
-                下一步 →
-              </button>
+                style={{ background: "var(--brand)" }}>下一步 →</button>
             </div>
           </div>
         )}
@@ -170,11 +138,9 @@ export default function ProfilePage() {
               {SOCIAL_FIELDS.map(field => (
                 <div key={field.key} className="flex items-center gap-3">
                   <div className="w-16 text-sm shrink-0" style={{ color: "var(--text-muted)" }}>{field.label}</div>
-                  <input type="text" value={form.socials[field.key] || ""}
-                    onChange={e => setForm(f => ({ ...f, socials: { ...f.socials, [field.key]: e.target.value } }))}
-                    placeholder={field.placeholder}
-                    className="flex-1 px-4 py-2.5 rounded-xl outline-none transition-all text-sm"
-                    style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)", color: "var(--text)" }} />
+                  <input type="text" value={form.socials[field.key] || ""} onChange={e => setForm(f => ({ ...f, socials: { ...f.socials, [field.key]: e.target.value } }))} placeholder={field.placeholder}
+                    className="flex-1 px-4 py-2.5 rounded-xl focus:outline-none transition-all text-sm"
+                    style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--text)" }} />
                 </div>
               ))}
             </div>
@@ -182,9 +148,7 @@ export default function ProfilePage() {
               <button onClick={() => setStep(2)} className="px-6 py-3 rounded-xl font-semibold" style={{ border: "1px solid var(--border)" }}>←</button>
               <button onClick={() => setSubmitted(true)}
                 className="flex-1 py-3 rounded-xl text-white font-semibold transition-all hover:scale-[1.02]"
-                style={{ background: "var(--brand)" }}>
-                ✨ 创建我的 Agent，完成报名
-              </button>
+                style={{ background: "var(--brand)" }}>✨ 创建我的 Agent，完成报名</button>
             </div>
           </div>
         )}

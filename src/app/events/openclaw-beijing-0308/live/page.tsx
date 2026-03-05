@@ -20,7 +20,7 @@ function TypingIndicator() {
   return (
     <div className="flex items-center gap-1 px-3 py-2">
       {[0, 1, 2].map(i => (
-        <div key={i} className="w-2 h-2 rounded-full" style={{ background: "var(--text-muted)", animation: "pulse-dot 1.2s ease-in-out infinite", animationDelay: `${i * 0.2}s` }} />
+        <div key={i} className="w-2 h-2 rounded-full" style={{ background: "var(--text-muted)", animation: `pulse-dot 1.2s ease-in-out infinite ${i * 0.2}s` }} />
       ))}
     </div>
   );
@@ -47,13 +47,12 @@ function ConversationCard({ conv, isActive }: { conv: ConvState; isActive: boole
 
   return (
     <div className="rounded-2xl overflow-hidden transition-all duration-300"
-      style={{ border: `1px solid ${isActive ? "var(--brand)" : "var(--border)"}`, boxShadow: isActive ? "0 0 20px rgba(232,93,74,0.1)" : "var(--shadow)" }}>
-      {/* Header */}
+      style={{ border: isActive ? "1px solid var(--brand)" : "1px solid var(--border)", boxShadow: isActive ? "0 0 20px rgba(232,93,74,0.1)" : "var(--shadow)" }}>
       <div className="p-4 flex items-center justify-between" style={{ background: "var(--bg-secondary)" }}>
         <div className="flex items-center gap-3">
           <div className="flex -space-x-2">
-            <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${conv.agentA.agentColor} flex items-center justify-center text-base border-2 z-10`} style={{ borderColor: "var(--card)" }}>{conv.agentA.avatar}</div>
-            <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${conv.agentB.agentColor} flex items-center justify-center text-base border-2`} style={{ borderColor: "var(--card)" }}>{conv.agentB.avatar}</div>
+            <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${conv.agentA.agentColor} flex items-center justify-center text-base z-10`} style={{ border: "2px solid var(--bg)" }}>{conv.agentA.avatar}</div>
+            <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${conv.agentB.agentColor} flex items-center justify-center text-base`} style={{ border: "2px solid var(--bg)" }}>{conv.agentB.avatar}</div>
           </div>
           <div>
             <div className="text-sm font-medium">{conv.agentA.name} × {conv.agentB.name}</div>
@@ -61,19 +60,12 @@ function ConversationCard({ conv, isActive }: { conv: ConvState; isActive: boole
           </div>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-          style={{
-            background: isDone && conv.recommendation ? "var(--agent-bg)" : isActive ? "rgba(232,93,74,0.15)" : "var(--bg)",
-            color: isDone && conv.recommendation ? "var(--agent)" : isActive ? "var(--brand)" : "var(--text-muted)",
-          }}>
-          <div className="w-1.5 h-1.5 rounded-full" style={{
-            background: isDone && conv.recommendation ? "var(--agent)" : isActive ? "var(--brand)" : "var(--text-subtle)",
-            animation: isActive && !isDone ? "pulse-dot 1.5s infinite" : "none",
-          }} />
+          style={{ background: isDone && conv.recommendation ? "var(--agent-bg)" : isActive ? "rgba(232,93,74,0.15)" : "var(--bg)", color: isDone && conv.recommendation ? "var(--agent)" : isActive ? "var(--brand)" : "var(--text-muted)" }}>
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: isDone && conv.recommendation ? "var(--agent)" : isActive ? "var(--brand)" : "var(--text-muted)", animation: isActive && !isDone ? "pulse-dot 1.2s infinite" : "none" }} />
           {isDone && conv.recommendation ? "已匹配" : isActive ? "对话中" : "等待中"}
         </div>
       </div>
 
-      {/* Messages */}
       <div className="p-4 space-y-3 max-h-64 overflow-y-auto" style={{ background: "var(--card)" }}>
         {currentMessages.map((msg, i) => {
           const agent = msg.from === "A" ? conv.agentA : conv.agentB;
@@ -87,20 +79,17 @@ function ConversationCard({ conv, isActive }: { conv: ConvState; isActive: boole
             </div>
           );
         })}
-        {isTyping && conv.visibleCount < conv.messages.length && (
+        {isTyping && (
           <div className="flex items-start gap-2" style={{ animation: "fadeInUp 0.3s ease-out" }}>
             <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${conv.messages[conv.visibleCount]?.from === "A" ? conv.agentA.agentColor : conv.agentB.agentColor} flex items-center justify-center text-sm shrink-0 mt-0.5`}>
               {conv.messages[conv.visibleCount]?.from === "A" ? conv.agentA.avatar : conv.agentB.avatar}
             </div>
-            <div className="rounded-xl rounded-tl-none" style={{ background: "var(--bg)" }}>
-              <TypingIndicator />
-            </div>
+            <div className="rounded-xl rounded-tl-none" style={{ background: "var(--bg)" }}><TypingIndicator /></div>
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      {/* Recommendation */}
       {isDone && conv.recommendation && (
         <div className="mx-4 mb-4 p-3 rounded-xl text-sm" style={{ background: "var(--agent-bg)", border: "1px solid var(--agent)", color: "var(--agent)", animation: "fadeInUp 0.4s ease-out" }}>
           {conv.recommendation}
@@ -119,11 +108,7 @@ export default function LivePage() {
   const [started, setStarted] = useState(false);
   const [elapsed, setElapsed] = useState(0);
 
-  useEffect(() => {
-    if (!started) return;
-    const timer = setInterval(() => setElapsed(e => e + 1), 1000);
-    return () => clearInterval(timer);
-  }, [started]);
+  useEffect(() => { if (!started) return; const t = setInterval(() => setElapsed(e => e + 1), 1000); return () => clearInterval(t); }, [started]);
 
   useEffect(() => {
     if (!started) return;
@@ -133,12 +118,11 @@ export default function LivePage() {
       conv.messages.forEach((_, mi) => {
         const delay = totalDelay;
         totalDelay += 1800 + Math.random() * 1200;
-        const t = setTimeout(() => {
+        delays.push(setTimeout(() => {
           setActiveConv(ci);
           setConvStates(prev => prev.map((c, i) => i === ci ? { ...c, visibleCount: mi + 1 } : c));
           setTotalMessages(m => m + 1);
-        }, delay);
-        delays.push(t);
+        }, delay));
       });
     });
     return () => delays.forEach(clearTimeout);
@@ -151,7 +135,7 @@ export default function LivePage() {
     <div className="min-h-screen" style={{ background: "var(--bg)" }}>
       <nav className="fixed top-0 w-full z-50 border-b" style={{ background: "var(--bg-secondary)", borderColor: "var(--border)" }}>
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/events/openclaw-beijing-0308" className="text-sm flex items-center gap-2" style={{ color: "var(--text-muted)" }}>
+          <Link href="/events/openclaw-beijing-0308" className="flex items-center gap-2 text-sm" style={{ color: "var(--text-muted)" }}>
             <span>←</span> 活动详情
           </Link>
           <div className="flex items-center gap-2">
@@ -164,16 +148,12 @@ export default function LivePage() {
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link href="/events/openclaw-beijing-0308/profile"
-              className="text-sm px-3 py-1.5 rounded-full text-white" style={{ background: "var(--brand)" }}>
-              + 加入活动
-            </Link>
+            <Link href="/events/openclaw-beijing-0308/profile" className="text-sm px-3 py-1.5 rounded-full text-white" style={{ background: "var(--brand)" }}>+ 加入</Link>
           </div>
         </div>
       </nav>
 
       <div className="max-w-5xl mx-auto px-4 pt-20 pb-24">
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8 mt-4">
           {[
             { label: "活跃 Agent", value: mockParticipants.length, icon: "🤖" },
@@ -197,7 +177,7 @@ export default function LivePage() {
             </p>
             <div className="flex flex-wrap gap-3 justify-center mb-4">
               {mockParticipants.map(p => (
-                <div key={p.id} className={`w-12 h-12 rounded-full bg-gradient-to-br ${p.agentColor} flex items-center justify-center text-xl border-2`} style={{ borderColor: "var(--bg)" }}>{p.avatar}</div>
+                <div key={p.id} className={`w-12 h-12 rounded-full bg-gradient-to-br ${p.agentColor} flex items-center justify-center text-xl`} style={{ border: "2px solid var(--bg)" }}>{p.avatar}</div>
               ))}
             </div>
             <p className="text-sm mb-10" style={{ color: "var(--text-subtle)" }}>{mockParticipants.length} 个 Agent 已就绪</p>
