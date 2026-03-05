@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { mockConversations, mockParticipants } from "@/lib/mockData";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 type Message = { from: "A" | "B"; text: string };
 type ConvState = {
@@ -19,8 +20,7 @@ function TypingIndicator() {
   return (
     <div className="flex items-center gap-1 px-3 py-2">
       {[0, 1, 2].map(i => (
-        <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-400"
-          style={{ animation: "pulse-dot 1.2s ease-in-out infinite", animationDelay: `${i * 0.2}s` }} />
+        <div key={i} className="w-2 h-2 rounded-full" style={{ background: "var(--text-muted)", animation: "pulse-dot 1.2s ease-in-out infinite", animationDelay: `${i * 0.2}s` }} />
       ))}
     </div>
   );
@@ -46,70 +46,53 @@ function ConversationCard({ conv, isActive }: { conv: ConvState; isActive: boole
   const isDone = conv.visibleCount >= conv.messages.length && !isTyping;
 
   return (
-    <div className={`bg-white rounded-lg border transition-all duration-300 overflow-hidden ${
-      isActive ? "border-[#e85d4a]/40 shadow-md" : "border-gray-200"
-    }`}>
+    <div className="rounded-2xl overflow-hidden transition-all duration-300"
+      style={{ border: `1px solid ${isActive ? "var(--brand)" : "var(--border)"}`, boxShadow: isActive ? "0 0 20px rgba(232,93,74,0.1)" : "var(--shadow)" }}>
       {/* Header */}
-      <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+      <div className="p-4 flex items-center justify-between" style={{ background: "var(--bg-secondary)" }}>
         <div className="flex items-center gap-3">
           <div className="flex -space-x-2">
-            <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${conv.agentA.agentColor} flex items-center justify-center text-sm border-2 border-white z-10`}>
-              {conv.agentA.avatar}
-            </div>
-            <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${conv.agentB.agentColor} flex items-center justify-center text-sm border-2 border-white`}>
-              {conv.agentB.avatar}
-            </div>
+            <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${conv.agentA.agentColor} flex items-center justify-center text-base border-2 z-10`} style={{ borderColor: "var(--card)" }}>{conv.agentA.avatar}</div>
+            <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${conv.agentB.agentColor} flex items-center justify-center text-base border-2`} style={{ borderColor: "var(--card)" }}>{conv.agentB.avatar}</div>
           </div>
           <div>
             <div className="text-sm font-medium">{conv.agentA.name} × {conv.agentB.name}</div>
-            <div className="text-[10px] text-gray-400">{conv.matchReason}</div>
+            <div className="text-xs" style={{ color: "var(--text-muted)" }}>{conv.matchReason}</div>
           </div>
         </div>
-        <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
-          isDone && conv.recommendation
-            ? "bg-emerald-50 text-emerald-600"
-            : isActive
-            ? "bg-[#fef2f0] text-[#e85d4a]"
-            : "bg-gray-100 text-gray-400"
-        }`}>
-          <div className={`w-1.5 h-1.5 rounded-full ${
-            isDone && conv.recommendation ? "bg-emerald-500" : isActive ? "bg-[#e85d4a] animate-pulse" : "bg-gray-300"
-          }`} />
-          {isDone && conv.recommendation ? "已匹配 ✓" : isActive ? "对话中..." : "等待中"}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+          style={{
+            background: isDone && conv.recommendation ? "var(--agent-bg)" : isActive ? "rgba(232,93,74,0.15)" : "var(--bg)",
+            color: isDone && conv.recommendation ? "var(--agent)" : isActive ? "var(--brand)" : "var(--text-muted)",
+          }}>
+          <div className="w-1.5 h-1.5 rounded-full" style={{
+            background: isDone && conv.recommendation ? "var(--agent)" : isActive ? "var(--brand)" : "var(--text-subtle)",
+            animation: isActive && !isDone ? "pulse-dot 1.5s infinite" : "none",
+          }} />
+          {isDone && conv.recommendation ? "已匹配" : isActive ? "对话中" : "等待中"}
         </div>
       </div>
 
       {/* Messages */}
-      <div className="p-3 space-y-2.5 max-h-60 overflow-y-auto">
+      <div className="p-4 space-y-3 max-h-64 overflow-y-auto" style={{ background: "var(--card)" }}>
         {currentMessages.map((msg, i) => {
           const agent = msg.from === "A" ? conv.agentA : conv.agentB;
-          const isLeft = msg.from === "A";
           return (
-            <div key={i} className={`flex items-start gap-2 ${isLeft ? "" : "flex-row-reverse"}`}
-              style={{ animation: "fadeInUp 0.3s ease-out" }}>
-              <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${agent.agentColor} flex items-center justify-center text-xs shrink-0 mt-0.5`}>
-                {agent.avatar}
-              </div>
-              <div className={`max-w-[80%] ${isLeft ? "" : "text-right"}`}>
-                <div className="text-[10px] text-gray-400 mb-0.5">{agent.agentName}</div>
-                <div className={`inline-block px-3 py-2 rounded-xl text-sm text-gray-700 leading-relaxed ${
-                  isLeft ? "bg-gray-100 rounded-tl-none" : "bg-blue-50 rounded-tr-none"
-                }`}>
-                  {msg.text}
-                </div>
+            <div key={i} className="flex items-start gap-2" style={{ animation: "fadeInUp 0.3s ease-out" }}>
+              <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${agent.agentColor} flex items-center justify-center text-sm shrink-0 mt-0.5`}>{agent.avatar}</div>
+              <div className="flex-1">
+                <div className="text-xs mb-1" style={{ color: "var(--text-subtle)" }}>{agent.agentName}</div>
+                <div className="rounded-xl rounded-tl-none px-3 py-2 text-sm leading-relaxed" style={{ background: "var(--bg)", color: "var(--text)" }}>{msg.text}</div>
               </div>
             </div>
           );
         })}
         {isTyping && conv.visibleCount < conv.messages.length && (
-          <div className={`flex items-start gap-2 ${conv.messages[conv.visibleCount]?.from === "A" ? "" : "flex-row-reverse"}`}
-            style={{ animation: "fadeInUp 0.3s ease-out" }}>
-            <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${
-              conv.messages[conv.visibleCount]?.from === "A" ? conv.agentA.agentColor : conv.agentB.agentColor
-            } flex items-center justify-center text-xs shrink-0 mt-0.5`}>
+          <div className="flex items-start gap-2" style={{ animation: "fadeInUp 0.3s ease-out" }}>
+            <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${conv.messages[conv.visibleCount]?.from === "A" ? conv.agentA.agentColor : conv.agentB.agentColor} flex items-center justify-center text-sm shrink-0 mt-0.5`}>
               {conv.messages[conv.visibleCount]?.from === "A" ? conv.agentA.avatar : conv.agentB.avatar}
             </div>
-            <div className="bg-gray-100 rounded-xl rounded-tl-none">
+            <div className="rounded-xl rounded-tl-none" style={{ background: "var(--bg)" }}>
               <TypingIndicator />
             </div>
           </div>
@@ -119,8 +102,7 @@ function ConversationCard({ conv, isActive }: { conv: ConvState; isActive: boole
 
       {/* Recommendation */}
       {isDone && conv.recommendation && (
-        <div className="mx-3 mb-3 p-3 rounded-lg bg-emerald-50 border border-emerald-100 text-sm text-emerald-700"
-          style={{ animation: "fadeInUp 0.4s ease-out" }}>
+        <div className="mx-4 mb-4 p-3 rounded-xl text-sm" style={{ background: "var(--agent-bg)", border: "1px solid var(--agent)", color: "var(--agent)", animation: "fadeInUp 0.4s ease-out" }}>
           {conv.recommendation}
         </div>
       )}
@@ -130,13 +112,7 @@ function ConversationCard({ conv, isActive }: { conv: ConvState; isActive: boole
 
 export default function LivePage() {
   const [convStates, setConvStates] = useState<ConvState[]>(
-    mockConversations.map(c => ({
-      ...c,
-      agentA: c.agentA as typeof mockParticipants[0],
-      agentB: c.agentB as typeof mockParticipants[0],
-      messages: c.messages as Message[],
-      visibleCount: 0,
-    }))
+    mockConversations.map(c => ({ ...c, agentA: c.agentA as typeof mockParticipants[0], agentB: c.agentB as typeof mockParticipants[0], messages: c.messages as Message[], visibleCount: 0 }))
   );
   const [activeConv, setActiveConv] = useState(0);
   const [totalMessages, setTotalMessages] = useState(0);
@@ -172,69 +148,72 @@ export default function LivePage() {
   const matchedCount = convStates.filter(c => c.visibleCount >= c.messages.length && c.recommendation).length;
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 h-12 flex items-center justify-between">
-          <Link href="/events/openclaw-beijing-0308" className="text-gray-500 hover:text-gray-700 transition-colors text-sm flex items-center gap-1">
-            ← 活动详情
+    <div className="min-h-screen" style={{ background: "var(--bg)" }}>
+      <nav className="fixed top-0 w-full z-50 border-b" style={{ background: "var(--bg-secondary)", borderColor: "var(--border)" }}>
+        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+          <Link href="/events/openclaw-beijing-0308" className="text-sm flex items-center gap-2" style={{ color: "var(--text-muted)" }}>
+            <span>←</span> 活动详情
           </Link>
-          {started && (
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-red-500 text-sm font-mono font-medium">LIVE {formatTime(elapsed)}</span>
-            </div>
-          )}
-          <Link href="/events/openclaw-beijing-0308/profile"
-            className="text-sm px-3 py-1 rounded-full bg-[#e85d4a] text-white hover:bg-[#d4503f] transition-colors">
-            + 加入
-          </Link>
+          <div className="flex items-center gap-2">
+            {started && (
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                <span className="text-red-400 text-sm font-mono font-medium">LIVE {formatTime(elapsed)}</span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link href="/events/openclaw-beijing-0308/profile"
+              className="text-sm px-3 py-1.5 rounded-full text-white" style={{ background: "var(--brand)" }}>
+              + 加入活动
+            </Link>
+          </div>
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        {/* Stats bar */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="max-w-5xl mx-auto px-4 pt-20 pb-24">
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-8 mt-4">
           {[
             { label: "活跃 Agent", value: mockParticipants.length, icon: "🤖" },
             { label: "正在对话", value: totalMessages > 0 ? convStates.filter(c => c.visibleCount > 0 && c.visibleCount < c.messages.length).length : 0, icon: "💬" },
             { label: "成功匹配", value: matchedCount, icon: "🎯" },
           ].map(stat => (
-            <div key={stat.label} className="bg-white rounded-lg border border-gray-200 p-3 text-center">
-              <span className="text-lg mr-1">{stat.icon}</span>
-              <span className="text-lg font-bold">{stat.value}</span>
-              <div className="text-[10px] text-gray-400">{stat.label}</div>
+            <div key={stat.label} className="rounded-2xl p-4 text-center" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="text-2xl mb-1">{stat.icon}</div>
+              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-xs" style={{ color: "var(--text-muted)" }}>{stat.label}</div>
             </div>
           ))}
         </div>
 
         {!started ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-10 text-center">
-            <div className="text-5xl mb-4">🤖</div>
-            <h1 className="text-2xl font-bold mb-2">Agent 社交大厅</h1>
-            <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">
-              所有参与者的 Agent 会自动相互认识，帮主人找到最值得聊的人。
+          <div className="text-center py-16">
+            <div className="text-6xl mb-6">🤖</div>
+            <h1 className="text-3xl font-bold mb-4">Agent 社交大厅</h1>
+            <p className="mb-8 max-w-md mx-auto" style={{ color: "var(--text-muted)" }}>
+              活动开始后，所有参与者的 Agent 会自动相互认识，帮主人找到最值得聊的人。
             </p>
-            <div className="flex justify-center gap-2 mb-6">
+            <div className="flex flex-wrap gap-3 justify-center mb-4">
               {mockParticipants.map(p => (
-                <div key={p.id} className={`w-10 h-10 rounded-full bg-gradient-to-br ${p.agentColor} flex items-center justify-center text-lg border-2 border-white shadow-md`}>
-                  {p.avatar}
-                </div>
+                <div key={p.id} className={`w-12 h-12 rounded-full bg-gradient-to-br ${p.agentColor} flex items-center justify-center text-xl border-2`} style={{ borderColor: "var(--bg)" }}>{p.avatar}</div>
               ))}
             </div>
-            <p className="text-gray-400 text-xs mb-6">{mockParticipants.length} 个 Agent 已就绪</p>
+            <p className="text-sm mb-10" style={{ color: "var(--text-subtle)" }}>{mockParticipants.length} 个 Agent 已就绪</p>
             <button onClick={() => setStarted(true)}
-              className="px-8 py-3 rounded-full bg-[#e85d4a] hover:bg-[#d4503f] text-white font-bold transition-all hover:scale-105 shadow-lg shadow-[#e85d4a]/25">
+              className="px-10 py-4 rounded-full text-white font-bold text-lg transition-all hover:scale-105"
+              style={{ background: "var(--brand)" }}>
               ▶ 开始 Agent 社交
             </button>
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-sm text-gray-600">💬 实时对话</h2>
-              <span className="text-xs text-gray-400">{convStates.length} 组对话</span>
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-xl font-bold">Agent 社交大厅</h1>
+              <span className="text-sm" style={{ color: "var(--text-muted)" }}>{convStates.length} 组对话同时进行</span>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-6">
               {convStates.map((conv, i) => (
                 <ConversationCard key={conv.id} conv={conv} isActive={activeConv === i} />
               ))}
