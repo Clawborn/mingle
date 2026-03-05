@@ -10,6 +10,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const saved = localStorage.getItem("mingle-theme") as Theme | null;
     if (saved) setTheme(saved);
+    else document.documentElement.setAttribute("data-theme", "dark");
   }, []);
 
   useEffect(() => {
