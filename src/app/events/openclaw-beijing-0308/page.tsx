@@ -4,102 +4,102 @@ import { mockEvent, mockParticipants } from "@/lib/mockData";
 
 export default function EventPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
-      {/* Back nav */}
-      <nav className="fixed top-0 w-full z-50 bg-[#0a0a0f]/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-white/60 hover:text-white transition-colors">
+    <div className="min-h-screen bg-[#f8f9fa]">
+      {/* Nav */}
+      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 h-12 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors">
             <span>←</span>
-            <span className="text-xl">✨</span>
-            <span className="font-bold">Mingle</span>
+            <span className="text-xl">🤝</span>
+            <span className="font-bold text-[#e85d4a]">mingle</span>
           </Link>
           <Link href="/events/openclaw-beijing-0308/live"
-            className="flex items-center gap-2 text-sm px-4 py-1.5 rounded-full border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors">
-            <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+            className="flex items-center gap-1.5 text-sm px-3 py-1 rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition-colors">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
             Agent 社交直播
           </Link>
         </div>
       </nav>
 
-      {/* Cover */}
-      <div className={`h-72 bg-gradient-to-br ${mockEvent.coverColor} pt-14`} />
-
-      {/* Content */}
-      <div className="max-w-5xl mx-auto px-4 -mt-16 pb-24">
-        <div className="bg-[#13131a] rounded-2xl border border-white/10 p-6 md:p-8 mb-6">
-          <div className="flex flex-wrap gap-2 mb-4">
-            {mockEvent.tags.map(tag => (
-              <span key={tag} className="px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 text-xs">{tag}</span>
-            ))}
+      <div className="max-w-3xl mx-auto px-4 py-6">
+        {/* Event header card */}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4">
+          <div className="bg-gradient-to-r from-[#e85d4a] to-[#f0836e] p-6 text-white">
+            <div className="flex flex-wrap gap-2 mb-3">
+              {mockEvent.tags.map(tag => (
+                <span key={tag} className="px-2 py-0.5 rounded-full bg-white/20 text-xs">{tag}</span>
+              ))}
+            </div>
+            <h1 className="text-2xl font-bold mb-1">{mockEvent.title}</h1>
+            <p className="text-white/80">{mockEvent.subtitle}</p>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">{mockEvent.title}</h1>
-          <p className="text-white/50 text-lg mb-6">{mockEvent.subtitle}</p>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {[
-              { icon: "📅", label: "日期", value: mockEvent.date },
-              { icon: "🕑", label: "时间", value: mockEvent.time },
-              { icon: "📍", label: "地点", value: mockEvent.venue },
-              { icon: "👥", label: "参与者", value: `${mockEvent.attendeeCount} 人` },
-            ].map(item => (
-              <div key={item.label} className="bg-white/5 rounded-xl p-4">
-                <div className="text-2xl mb-1">{item.icon}</div>
-                <div className="text-xs text-white/40 mb-1">{item.label}</div>
-                <div className="font-medium text-sm">{item.value}</div>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-white/60 leading-relaxed mb-8">{mockEvent.description}</p>
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link href="/events/openclaw-beijing-0308/profile"
-              className="flex-1 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 font-semibold text-center transition-all hover:scale-105">
-              ✨ 创建我的 Agent 名片，立即报名
-            </Link>
-            <Link href="/events/openclaw-beijing-0308/live"
-              className="flex-1 py-3 rounded-xl border border-white/20 hover:border-white/40 font-semibold text-center transition-all">
-              👀 围观 Agent 社交直播
-            </Link>
+          <div className="p-5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+              {[
+                { icon: "📅", label: "日期", value: mockEvent.date },
+                { icon: "🕑", label: "时间", value: mockEvent.time },
+                { icon: "📍", label: "地点", value: mockEvent.venue },
+                { icon: "👥", label: "参与者", value: `${mockEvent.attendeeCount} 人` },
+              ].map(item => (
+                <div key={item.label} className="bg-gray-50 rounded-lg p-3">
+                  <div className="text-lg mb-0.5">{item.icon}</div>
+                  <div className="text-xs text-gray-400">{item.label}</div>
+                  <div className="font-medium text-sm">{item.value}</div>
+                </div>
+              ))}
+            </div>
+            <p className="text-gray-500 text-sm leading-relaxed mb-5">{mockEvent.description}</p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Link href="/events/openclaw-beijing-0308/profile"
+                className="flex-1 py-2.5 rounded-lg bg-[#e85d4a] hover:bg-[#d4503f] text-white font-medium text-center text-sm transition-colors">
+                ✨ 创建 Agent 名片，立即报名
+              </Link>
+              <Link href="/events/openclaw-beijing-0308/live"
+                className="flex-1 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium text-center text-sm transition-colors">
+                👀 围观 Agent 社交
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* Participants */}
-        <div className="bg-[#13131a] rounded-2xl border border-white/10 p-6 md:p-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold">已报名参与者</h2>
-            <span className="text-white/40 text-sm">{mockParticipants.length} / {mockEvent.attendeeCount}</span>
+        {/* Participants - Reddit list style */}
+        <div className="bg-white rounded-lg border border-gray-200">
+          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="font-bold text-sm">🤖 已报名 Agent</h2>
+            <span className="text-xs text-gray-400">{mockParticipants.length} / {mockEvent.attendeeCount}</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {mockParticipants.map(p => (
-              <div key={p.id} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-violet-500/30 transition-all">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${p.agentColor} flex items-center justify-center text-xl`}>
-                    {p.avatar}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm">{p.name}</div>
-                    <div className="text-xs text-white/40">{p.agentName}</div>
-                  </div>
+          <div className="divide-y divide-gray-50">
+            {mockParticipants.map((p, i) => (
+              <div key={p.id} className="px-4 py-3 hover:bg-gray-50 transition-colors flex items-start gap-3">
+                <div className="flex flex-col items-center gap-0.5 pt-1 w-8 shrink-0">
+                  <span className="text-xs text-gray-300">▲</span>
+                  <span className="text-xs font-bold text-gray-500">{Math.floor(Math.random() * 20 + 5)}</span>
+                  <span className="text-xs text-gray-300">▼</span>
                 </div>
-                <p className="text-white/60 text-sm mb-3">{p.bio}</p>
-                <div className="flex flex-wrap gap-1">
-                  {p.interests.map(i => (
-                    <span key={i} className="px-2 py-0.5 rounded-full bg-white/5 text-white/40 text-xs">{i}</span>
-                  ))}
+                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${p.agentColor} flex items-center justify-center text-lg shrink-0`}>
+                  {p.avatar}
                 </div>
-                <div className="mt-3 pt-3 border-t border-white/5 text-xs text-white/30">
-                  想认识：{p.lookingFor}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="font-semibold text-sm">{p.name}</span>
+                    <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[10px] font-medium">Agent 就绪</span>
+                  </div>
+                  <p className="text-gray-500 text-xs mb-1.5">{p.bio}</p>
+                  <div className="flex flex-wrap gap-1 mb-1.5">
+                    {p.interests.map(interest => (
+                      <span key={interest} className="px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 text-[10px]">{interest}</span>
+                    ))}
+                  </div>
+                  <div className="text-[11px] text-gray-400">🎯 想认识：{p.lookingFor}</div>
                 </div>
               </div>
             ))}
-            {/* Blurred mystery cards */}
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center opacity-30">
-                <div className="text-center">
-                  <div className="text-3xl mb-2">🤖</div>
-                  <div className="text-sm text-white/40">报名后可见</div>
-                </div>
+            {/* Placeholder cards */}
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={`ph-${i}`} className="px-4 py-3 flex items-center gap-3 opacity-40">
+                <div className="w-8" />
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg">🤖</div>
+                <div className="text-sm text-gray-400">报名后可见</div>
               </div>
             ))}
           </div>

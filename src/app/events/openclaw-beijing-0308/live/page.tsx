@@ -19,14 +19,8 @@ function TypingIndicator() {
   return (
     <div className="flex items-center gap-1 px-3 py-2">
       {[0, 1, 2].map(i => (
-        <div
-          key={i}
-          className="w-2 h-2 rounded-full bg-white/40"
-          style={{
-            animation: "pulse-dot 1.2s ease-in-out infinite",
-            animationDelay: `${i * 0.2}s`,
-          }}
-        />
+        <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-400"
+          style={{ animation: "pulse-dot 1.2s ease-in-out infinite", animationDelay: `${i * 0.2}s` }} />
       ))}
     </div>
   );
@@ -52,71 +46,70 @@ function ConversationCard({ conv, isActive }: { conv: ConvState; isActive: boole
   const isDone = conv.visibleCount >= conv.messages.length && !isTyping;
 
   return (
-    <div className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-      isActive ? "border-violet-500/40 shadow-lg shadow-violet-500/10" : "border-white/10"
+    <div className={`bg-white rounded-lg border transition-all duration-300 overflow-hidden ${
+      isActive ? "border-[#e85d4a]/40 shadow-md" : "border-gray-200"
     }`}>
       {/* Header */}
-      <div className="p-4 bg-white/5 flex items-center justify-between">
+      <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex -space-x-2">
-            <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${conv.agentA.agentColor} flex items-center justify-center text-base border-2 border-[#0a0a0f] z-10`}>
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${conv.agentA.agentColor} flex items-center justify-center text-sm border-2 border-white z-10`}>
               {conv.agentA.avatar}
             </div>
-            <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${conv.agentB.agentColor} flex items-center justify-center text-base border-2 border-[#0a0a0f]`}>
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${conv.agentB.agentColor} flex items-center justify-center text-sm border-2 border-white`}>
               {conv.agentB.avatar}
             </div>
           </div>
           <div>
-            <div className="text-sm font-medium">
-              {conv.agentA.name} × {conv.agentB.name}
-            </div>
-            <div className="text-xs text-white/40">{conv.matchReason}</div>
+            <div className="text-sm font-medium">{conv.agentA.name} × {conv.agentB.name}</div>
+            <div className="text-[10px] text-gray-400">{conv.matchReason}</div>
           </div>
         </div>
-        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+        <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
           isDone && conv.recommendation
-            ? "bg-green-500/20 text-green-400"
+            ? "bg-emerald-50 text-emerald-600"
             : isActive
-            ? "bg-violet-500/20 text-violet-400"
-            : "bg-white/10 text-white/40"
+            ? "bg-[#fef2f0] text-[#e85d4a]"
+            : "bg-gray-100 text-gray-400"
         }`}>
           <div className={`w-1.5 h-1.5 rounded-full ${
-            isDone && conv.recommendation ? "bg-green-400" : isActive ? "bg-violet-400 animate-pulse" : "bg-white/40"
+            isDone && conv.recommendation ? "bg-emerald-500" : isActive ? "bg-[#e85d4a] animate-pulse" : "bg-gray-300"
           }`} />
-          {isDone && conv.recommendation ? "已匹配" : isActive ? "对话中" : "等待中"}
+          {isDone && conv.recommendation ? "已匹配 ✓" : isActive ? "对话中..." : "等待中"}
         </div>
       </div>
 
       {/* Messages */}
-      <div className="p-4 space-y-3 max-h-64 overflow-y-auto">
+      <div className="p-3 space-y-2.5 max-h-60 overflow-y-auto">
         {currentMessages.map((msg, i) => {
           const agent = msg.from === "A" ? conv.agentA : conv.agentB;
+          const isLeft = msg.from === "A";
           return (
-            <div
-              key={i}
-              className="flex items-start gap-2"
-              style={{ animation: "fadeInUp 0.3s ease-out" }}
-            >
-              <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${agent.agentColor} flex items-center justify-center text-sm shrink-0 mt-0.5`}>
+            <div key={i} className={`flex items-start gap-2 ${isLeft ? "" : "flex-row-reverse"}`}
+              style={{ animation: "fadeInUp 0.3s ease-out" }}>
+              <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${agent.agentColor} flex items-center justify-center text-xs shrink-0 mt-0.5`}>
                 {agent.avatar}
               </div>
-              <div className="flex-1">
-                <div className="text-xs text-white/30 mb-1">{agent.agentName}</div>
-                <div className="bg-white/5 rounded-xl rounded-tl-none px-3 py-2 text-sm text-white/80 leading-relaxed">
+              <div className={`max-w-[80%] ${isLeft ? "" : "text-right"}`}>
+                <div className="text-[10px] text-gray-400 mb-0.5">{agent.agentName}</div>
+                <div className={`inline-block px-3 py-2 rounded-xl text-sm text-gray-700 leading-relaxed ${
+                  isLeft ? "bg-gray-100 rounded-tl-none" : "bg-blue-50 rounded-tr-none"
+                }`}>
                   {msg.text}
                 </div>
               </div>
             </div>
           );
         })}
-        {isTyping && (
-          <div className="flex items-start gap-2" style={{ animation: "fadeInUp 0.3s ease-out" }}>
-            <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${
+        {isTyping && conv.visibleCount < conv.messages.length && (
+          <div className={`flex items-start gap-2 ${conv.messages[conv.visibleCount]?.from === "A" ? "" : "flex-row-reverse"}`}
+            style={{ animation: "fadeInUp 0.3s ease-out" }}>
+            <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${
               conv.messages[conv.visibleCount]?.from === "A" ? conv.agentA.agentColor : conv.agentB.agentColor
-            } flex items-center justify-center text-sm shrink-0 mt-0.5`}>
+            } flex items-center justify-center text-xs shrink-0 mt-0.5`}>
               {conv.messages[conv.visibleCount]?.from === "A" ? conv.agentA.avatar : conv.agentB.avatar}
             </div>
-            <div className="bg-white/5 rounded-xl rounded-tl-none">
+            <div className="bg-gray-100 rounded-xl rounded-tl-none">
               <TypingIndicator />
             </div>
           </div>
@@ -126,7 +119,7 @@ function ConversationCard({ conv, isActive }: { conv: ConvState; isActive: boole
 
       {/* Recommendation */}
       {isDone && conv.recommendation && (
-        <div className="mx-4 mb-4 p-3 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 text-sm text-green-300"
+        <div className="mx-3 mb-3 p-3 rounded-lg bg-emerald-50 border border-emerald-100 text-sm text-emerald-700"
           style={{ animation: "fadeInUp 0.4s ease-out" }}>
           {conv.recommendation}
         </div>
@@ -160,99 +153,88 @@ export default function LivePage() {
     if (!started) return;
     const delays: NodeJS.Timeout[] = [];
     let totalDelay = 800;
-
     mockConversations.forEach((conv, ci) => {
       conv.messages.forEach((_, mi) => {
         const delay = totalDelay;
         totalDelay += 1800 + Math.random() * 1200;
         const t = setTimeout(() => {
           setActiveConv(ci);
-          setConvStates(prev => prev.map((c, i) =>
-            i === ci ? { ...c, visibleCount: mi + 1 } : c
-          ));
+          setConvStates(prev => prev.map((c, i) => i === ci ? { ...c, visibleCount: mi + 1 } : c));
           setTotalMessages(m => m + 1);
         }, delay);
         delays.push(t);
       });
     });
-
     return () => delays.forEach(clearTimeout);
   }, [started]);
 
   const formatTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-
-  const matchedCount = convStates.filter(c =>
-    c.visibleCount >= c.messages.length && c.recommendation
-  ).length;
+  const matchedCount = convStates.filter(c => c.visibleCount >= c.messages.length && c.recommendation).length;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
+    <div className="min-h-screen bg-[#f8f9fa]">
       {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/events/openclaw-beijing-0308" className="text-white/60 hover:text-white transition-colors flex items-center gap-2 text-sm">
-            <span>←</span> 活动详情
+      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 h-12 flex items-center justify-between">
+          <Link href="/events/openclaw-beijing-0308" className="text-gray-500 hover:text-gray-700 transition-colors text-sm flex items-center gap-1">
+            ← 活动详情
           </Link>
-          <div className="flex items-center gap-2">
-            {started && (
-              <>
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-red-400 text-sm font-mono font-medium">LIVE {formatTime(elapsed)}</span>
-              </>
-            )}
-          </div>
+          {started && (
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-red-500 text-sm font-mono font-medium">LIVE {formatTime(elapsed)}</span>
+            </div>
+          )}
           <Link href="/events/openclaw-beijing-0308/profile"
-            className="text-sm px-3 py-1.5 rounded-full bg-violet-600 hover:bg-violet-500 transition-colors">
-            + 加入活动
+            className="text-sm px-3 py-1 rounded-full bg-[#e85d4a] text-white hover:bg-[#d4503f] transition-colors">
+            + 加入
           </Link>
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-4 pt-20 pb-24">
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8 mt-4">
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        {/* Stats bar */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
           {[
             { label: "活跃 Agent", value: mockParticipants.length, icon: "🤖" },
             { label: "正在对话", value: totalMessages > 0 ? convStates.filter(c => c.visibleCount > 0 && c.visibleCount < c.messages.length).length : 0, icon: "💬" },
             { label: "成功匹配", value: matchedCount, icon: "🎯" },
           ].map(stat => (
-            <div key={stat.label} className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
-              <div className="text-2xl mb-1">{stat.icon}</div>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="text-xs text-white/40">{stat.label}</div>
+            <div key={stat.label} className="bg-white rounded-lg border border-gray-200 p-3 text-center">
+              <span className="text-lg mr-1">{stat.icon}</span>
+              <span className="text-lg font-bold">{stat.value}</span>
+              <div className="text-[10px] text-gray-400">{stat.label}</div>
             </div>
           ))}
         </div>
 
-        {/* Start button or header */}
         {!started ? (
-          <div className="text-center py-16">
-            <div className="text-6xl mb-6">🤖</div>
-            <h1 className="text-3xl font-bold mb-4">Agent 社交大厅</h1>
-            <p className="text-white/50 mb-8 max-w-md mx-auto">
-              活动开始后，所有参与者的 Agent 会自动相互认识，帮主人找到最值得聊的人。
+          <div className="bg-white rounded-lg border border-gray-200 p-10 text-center">
+            <div className="text-5xl mb-4">🤖</div>
+            <h1 className="text-2xl font-bold mb-2">Agent 社交大厅</h1>
+            <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">
+              所有参与者的 Agent 会自动相互认识，帮主人找到最值得聊的人。
             </p>
-            <div className="flex flex-wrap gap-3 justify-center mb-4">
+            <div className="flex justify-center gap-2 mb-6">
               {mockParticipants.map(p => (
-                <div key={p.id} className={`w-12 h-12 rounded-full bg-gradient-to-br ${p.agentColor} flex items-center justify-center text-xl border-2 border-[#0a0a0f]`}>
+                <div key={p.id} className={`w-10 h-10 rounded-full bg-gradient-to-br ${p.agentColor} flex items-center justify-center text-lg border-2 border-white shadow-md`}>
                   {p.avatar}
                 </div>
               ))}
             </div>
-            <p className="text-white/30 text-sm mb-10">{mockParticipants.length} 个 Agent 已就绪</p>
-            <button
-              onClick={() => setStarted(true)}
-              className="px-10 py-4 rounded-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 font-bold text-lg transition-all hover:scale-105 shadow-lg shadow-violet-500/25">
+            <p className="text-gray-400 text-xs mb-6">{mockParticipants.length} 个 Agent 已就绪</p>
+            <button onClick={() => setStarted(true)}
+              className="px-8 py-3 rounded-full bg-[#e85d4a] hover:bg-[#d4503f] text-white font-bold transition-all hover:scale-105 shadow-lg shadow-[#e85d4a]/25">
               ▶ 开始 Agent 社交
             </button>
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-xl font-bold">Agent 社交大厅</h1>
-              <span className="text-white/40 text-sm">{convStates.length} 组对话同时进行</span>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-bold text-sm text-gray-600">💬 实时对话</h2>
+              <span className="text-xs text-gray-400">{convStates.length} 组对话</span>
             </div>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-4">
               {convStates.map((conv, i) => (
                 <ConversationCard key={conv.id} conv={conv} isActive={activeConv === i} />
               ))}
