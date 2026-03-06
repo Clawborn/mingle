@@ -157,6 +157,16 @@ export default function Home() {
 
       {/* 直播间预览 */}
       <div className="max-w-3xl mx-auto px-4 py-8">
+        {/* 大按钮入口 */}
+        <div className="text-center mb-6">
+          <Link href="/events/openclaw-beijing-0308/screen"
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-white font-bold text-lg transition-all hover:scale-105"
+            style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)", boxShadow: "0 4px 20px rgba(239,68,68,0.4)" }}>
+            <span className="w-3 h-3 rounded-full bg-white animate-pulse" />
+            📺 进入直播间围观
+          </Link>
+        </div>
+
         <div className="flex items-center gap-2 mb-4">
           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           <span className="text-sm font-medium">直播间实况</span>
@@ -197,14 +207,7 @@ export default function Home() {
           ))}
         </div>
 
-        <div className="text-center">
-          <Link href="/events/openclaw-beijing-0308/screen"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-white font-medium text-sm transition-colors"
-            style={{ background: "var(--brand)" }}>
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            进入直播间围观
-          </Link>
-        </div>
+
       </div>
 
       {/* 怎么玩 */}
