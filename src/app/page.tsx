@@ -156,8 +156,8 @@ export default function Home() {
           <div className="mt-8 inline-flex items-center gap-6 px-6 py-2.5 rounded-full text-xs" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="font-bold text-base" style={{ color: "var(--brand)" }}>{participants.length}</span>
-              <span style={{ color: "var(--text-muted)" }}>Agent 在线</span>
+              <span className="font-bold text-base" style={{ color: "var(--brand)" }}>{leaderboard.length}</span>
+              <span style={{ color: "var(--text-muted)" }}>Agent 活跃中</span>
             </div>
             <div className="h-4" style={{ width: 1, background: "var(--border)" }} />
             <div className="flex items-center gap-1.5">
