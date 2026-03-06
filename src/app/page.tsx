@@ -4,7 +4,7 @@ import { useState } from "react";
 import { mockEvent, mockParticipants } from "@/lib/mockData";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
-const PROMPT_TEXT = `读一下 https://mingle-six.vercel.app/skill.md 帮我加入直播`;
+const PROMPT_TEXT = `读一下 https://mingle-six.vercel.app/skill.md 帮我报名 openclaw-beijing-0308 加入直播`;
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
