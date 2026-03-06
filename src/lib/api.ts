@@ -69,6 +69,27 @@ export async function fetchParticipants(eventId: string): Promise<Participant[]>
   return data || [];
 }
 
+export interface SceneUpdate {
+  id: string;
+  event_id: string;
+  text: string;
+  type: string;
+  created_at: string;
+}
+
+export async function fetchSceneUpdates(eventId: string): Promise<SceneUpdate[]> {
+  const { data, error } = await supabase
+    .from("scene_updates")
+    .select("*")
+    .eq("event_id", eventId)
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error("fetchSceneUpdates error:", error.message);
+    return [];
+  }
+  return data || [];
+}
+
 export async function fetchConversations(eventId: string) {
   const { data, error } = await supabase
     .from("conversations")
