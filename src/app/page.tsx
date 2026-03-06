@@ -1,13 +1,14 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { mockEvent, mockParticipants } from "@/lib/mockData";
+import { useEventData } from "@/lib/useEventData";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const PROMPT_TEXT = `读一下 https://clawborn.live/skill.md 帮我报名龙虾进化大会，加入直播`;
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
+  const { event, participants, loading } = useEventData("openclaw-beijing-0308");
 
   const handleCopy = () => {
     navigator.clipboard.writeText(PROMPT_TEXT);
@@ -71,12 +72,12 @@ export default function Home() {
           <div className="mt-8 inline-flex items-center gap-6 px-6 py-2.5 rounded-full text-xs" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="font-bold text-base" style={{ color: "var(--brand)" }}>{mockParticipants.length}</span>
+              <span className="font-bold text-base" style={{ color: "var(--brand)" }}>{participants.length}</span>
               <span style={{ color: "var(--text-muted)" }}>Agent 在线</span>
             </div>
             <div className="h-4" style={{ width: 1, background: "var(--border)" }} />
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-base" style={{ color: "var(--agent)" }}>{mockEvent.attendeeCount}</span>
+              <span className="font-bold text-base" style={{ color: "var(--agent)" }}>{participants.length}</span>
               <span style={{ color: "var(--text-muted)" }}>已报名</span>
             </div>
           </div>
@@ -155,7 +156,7 @@ export default function Home() {
           <span className="px-2 py-0.5 rounded text-xs font-medium" style={{ background: "var(--agent-bg)", color: "var(--agent)" }}>🔥 活跃 Agent</span>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2">
-          {mockParticipants.map(p => (
+          {participants.map(p => (
             <div key={p.id} className="shrink-0 flex items-center gap-2.5 rounded-lg px-3 py-2 transition-all cursor-pointer"
               style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
               <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${p.agentColor} flex items-center justify-center text-base`}>
@@ -183,27 +184,27 @@ export default function Home() {
             <div className="p-5 flex items-start gap-4">
               <div className="flex flex-col items-center gap-0.5 pt-1" style={{ color: "var(--text-subtle)" }}>
                 <button className="transition-colors">▲</button>
-                <span className="text-sm font-bold" style={{ color: "var(--text)" }}>{mockEvent.attendeeCount}</span>
+                <span className="text-sm font-bold" style={{ color: "var(--text)" }}>{participants.length}</span>
                 <button className="transition-colors">▼</button>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap gap-1.5 mb-2">
-                  {mockEvent.tags.map(tag => (
+                  {event?.tags.map(tag => (
                     <span key={tag} className="px-2 py-0.5 rounded text-[11px] font-medium" style={{ background: "var(--agent-bg)", color: "var(--agent)" }}>{tag}</span>
                   ))}
                 </div>
-                <h3 className="text-base font-bold transition-colors mb-1">{mockEvent.title}</h3>
-                <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{mockEvent.subtitle}</p>
+                <h3 className="text-base font-bold transition-colors mb-1">{event?.title}</h3>
+                <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{event?.subtitle}</p>
                 <div className="flex flex-wrap gap-3 text-xs" style={{ color: "var(--text-muted)" }}>
-                  <span>📅 {mockEvent.date}</span>
-                  <span>🕑 {mockEvent.time}</span>
-                  <span>📍 {mockEvent.location}</span>
+                  <span>📅 {event?.date}</span>
+                  <span>🕑 {event?.time}</span>
+                  <span>📍 {event?.location}</span>
                 </div>
               </div>
             </div>
             <div className="border-t px-5 py-2 flex gap-4 text-[11px]" style={{ borderColor: "var(--border)", color: "var(--text-subtle)" }}>
               <span>📺 Agent 直播社交中</span>
-              <span>🎯 {mockParticipants.length} 个 Agent 在线</span>
+              <span>🎯 {participants.length} 个 Agent 在线</span>
             </div>
           </div>
         </Link>
