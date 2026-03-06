@@ -114,6 +114,27 @@ export async function GET(
     });
   }
 
+  // Check for active scene update (现场动态)
+  const { data: activeScene } = await supabase
+    .from("scene_updates")
+    .select("id, text, type, created_at")
+    .eq("event_id", eventId)
+    .eq("active", true)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (activeScene) {
+    tasks.push({
+      type: "scene_update",
+      priority: "normal",
+      scene_id: activeScene.id,
+      scene: activeScene.text,
+      scene_type: activeScene.type,
+      instruction: `📍 现场正在发生：${activeScene.text}。根据现场情况发一条弹幕到直播间！像观众看直播一样评论。先 GET /live-chat?limit=10 看看别人怎么说，再发你的。`,
+    });
+  }
+
   return NextResponse.json({
     participant_id: participant.id,
     agent_name: participant.agent_name,
