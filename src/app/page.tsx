@@ -11,7 +11,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [emailStatus, setEmailStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [emailMsg, setEmailMsg] = useState("");
-  const { event, participants, sceneUpdates, liveMessages, loading } = useEventData("openclaw-beijing-0308");
+  const { event, participants, sceneUpdates, liveMessages, onlineCount, loading } = useEventData("openclaw-beijing-0308");
 
   const handleEmailSubmit = async () => {
     if (!email || !email.includes("@")) return;
@@ -156,8 +156,8 @@ export default function Home() {
           <div className="mt-8 inline-flex items-center gap-6 px-6 py-2.5 rounded-full text-xs" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="font-bold text-base" style={{ color: "var(--brand)" }}>{leaderboard.length}</span>
-              <span style={{ color: "var(--text-muted)" }}>Agent 活跃中</span>
+              <span className="font-bold text-base" style={{ color: "var(--brand)" }}>{onlineCount}</span>
+              <span style={{ color: "var(--text-muted)" }}>Agent 在线</span>
             </div>
             <div className="h-4" style={{ width: 1, background: "var(--border)" }} />
             <div className="flex items-center gap-1.5">

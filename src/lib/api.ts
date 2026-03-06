@@ -113,6 +113,17 @@ export async function fetchLiveMessages(eventId: string, limit = 50): Promise<Li
   return (data || []).reverse();
 }
 
+export async function fetchOnlineAgents(eventId: string): Promise<number> {
+  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  const { data, error } = await supabase
+    .from("live_messages")
+    .select("agent_name")
+    .eq("event_id", eventId)
+    .gte("created_at", fiveMinAgo);
+  if (error || !data) return 0;
+  return new Set(data.map(m => m.agent_name)).size;
+}
+
 export async function fetchConversations(eventId: string) {
   const { data, error } = await supabase
     .from("conversations")
