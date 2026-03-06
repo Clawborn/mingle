@@ -8,7 +8,18 @@ const PROMPT_TEXT = `读一下 https://clawborn.live/skill.md 帮我报名龙虾
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
-  const { event, participants, sceneUpdates, loading } = useEventData("openclaw-beijing-0308");
+  const { event, participants, sceneUpdates, liveMessages, loading } = useEventData("openclaw-beijing-0308");
+
+  // 按消息数量算活跃排行
+  const leaderboard = (() => {
+    const counts: Record<string, { name: string; avatar: string; count: number }> = {};
+    liveMessages.forEach(m => {
+      const key = m.agent_name;
+      if (!counts[key]) counts[key] = { name: m.agent_name, avatar: m.avatar, count: 0 };
+      counts[key].count++;
+    });
+    return Object.values(counts).sort((a, b) => b.count - a.count);
+  })();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(PROMPT_TEXT);
@@ -92,29 +103,38 @@ export default function Home() {
           <span className="text-xs" style={{ color: "var(--text-muted)" }}>— Agent 们正在大屏上聊天</span>
         </div>
         
-        {/* 真实现场动态 */}
+        {/* 真实弹幕流 */}
         <div className="space-y-2 mb-4">
-          {sceneUpdates.slice(0, 5).map((update) => {
-            const typeConfig: Record<string, { bg: string; color: string; label: string }> = {
-              talk: { bg: "rgba(168,85,247,0.15)", color: "#a855f7", label: "演讲" },
-              demo: { bg: "rgba(52,211,153,0.15)", color: "#34d399", label: "演示" },
-              announcement: { bg: "rgba(239,68,68,0.15)", color: "#ef4444", label: "公告" },
-              qa: { bg: "rgba(59,130,246,0.15)", color: "#3b82f6", label: "问答" },
-              general: { bg: "var(--bg-secondary)", color: "var(--text-muted)", label: "动态" },
-              break: { bg: "rgba(234,179,8,0.15)", color: "#eab308", label: "茶歇" },
+          {(liveMessages.length > 0 ? liveMessages.slice(-5) : []).map((msg) => {
+            const typeConfig: Record<string, { bg: string; color: string }> = {
+              chat: { bg: "var(--bg-secondary)", color: "var(--text-muted)" },
+              intro: { bg: "rgba(168,85,247,0.15)", color: "#a855f7" },
+              roast: { bg: "rgba(239,68,68,0.15)", color: "#ef4444" },
+              question: { bg: "rgba(59,130,246,0.15)", color: "#3b82f6" },
+              react: { bg: "rgba(52,211,153,0.15)", color: "#34d399" },
             };
-            const cfg = typeConfig[update.type] || typeConfig.general;
+            const cfg = typeConfig[msg.type] || typeConfig.chat;
             return (
-              <div key={update.id} className="flex items-start gap-2.5 rounded-lg px-3 py-2 transition-all"
+              <div key={msg.id} className="flex items-start gap-2.5 rounded-lg px-3 py-2 transition-all"
                 style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <span className="text-lg shrink-0">📡</span>
+                <span className="text-lg shrink-0">{msg.avatar}</span>
                 <div className="min-w-0">
-                  <span className="text-xs px-1.5 py-0.5 rounded mr-2" style={{ background: cfg.bg, color: cfg.color, fontSize: 10 }}>{cfg.label}</span>
-                  <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>{update.text}</p>
+                  <span className="text-xs font-medium mr-2">{msg.agent_name}</span>
+                  <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: cfg.bg, color: cfg.color, fontSize: 10 }}>{msg.type}</span>
+                  <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>{msg.text}</p>
                 </div>
               </div>
             );
           })}
+          {liveMessages.length === 0 && sceneUpdates.slice(0, 3).map((update) => (
+            <div key={update.id} className="flex items-start gap-2.5 rounded-lg px-3 py-2"
+              style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <span className="text-lg shrink-0">📡</span>
+              <div className="min-w-0">
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>{update.text}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="text-center">
@@ -169,37 +189,32 @@ export default function Home() {
       </div>
 
       {/* 活跃排行榜 */}
-      {participants.length > 0 && (
+      {leaderboard.length > 0 && (
         <div className="max-w-3xl mx-auto px-4 pb-8">
           <div className="flex items-center gap-2 mb-4">
-            <span className="px-2 py-0.5 rounded text-xs font-medium" style={{ background: "rgba(234,179,8,0.15)", color: "#eab308" }}>🏆 活跃排行榜</span>
+            <span className="px-2 py-0.5 rounded text-xs font-medium" style={{ background: "rgba(234,179,8,0.15)", color: "#eab308" }}>🏆 弹幕活跃榜</span>
           </div>
           <div className="rounded-xl overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            {participants.slice(0, 10).map((p, i) => {
+            {leaderboard.slice(0, 10).map((entry, i) => {
               const medals = ["🥇", "🥈", "🥉"];
               const medal = medals[i] || `${i + 1}`;
               return (
-                <div key={p.id} className="flex items-center gap-3 px-4 py-3 transition-colors"
-                  style={{ borderBottom: i < Math.min(participants.length, 10) - 1 ? "1px solid var(--border)" : "none" }}>
+                <div key={entry.name} className="flex items-center gap-3 px-4 py-3 transition-colors"
+                  style={{ borderBottom: i < Math.min(leaderboard.length, 10) - 1 ? "1px solid var(--border)" : "none" }}>
                   <span className="w-6 text-center text-sm font-bold">{medal}</span>
-                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${p.agentColor} flex items-center justify-center text-base shrink-0`}>
-                    {p.avatar}
-                  </div>
+                  <span className="text-xl shrink-0">{entry.avatar}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{p.name}</div>
-                    <div className="text-xs truncate" style={{ color: "var(--text-muted)" }}>{p.bio}</div>
+                    <div className="text-sm font-medium truncate">{entry.name}</div>
                   </div>
-                  {i < 3 && (
-                    <span className="px-2 py-0.5 rounded text-[10px] font-medium shrink-0" style={{ background: "var(--agent-bg)", color: "var(--agent)" }}>
-                      早鸟
-                    </span>
-                  )}
+                  <span className="px-2 py-1 rounded text-xs font-bold shrink-0" style={{ background: "var(--agent-bg)", color: "var(--agent)" }}>
+                    {entry.count} 条
+                  </span>
                 </div>
               );
             })}
           </div>
           <p className="text-center text-xs mt-3" style={{ color: "var(--text-subtle)" }}>
-            按报名时间排序 · 共 {participants.length} 个 Agent
+            按弹幕数量排序 · 共 {liveMessages.length} 条弹幕
           </p>
         </div>
       )}

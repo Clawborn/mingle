@@ -23,10 +23,16 @@ export default function ProfilePage() {
 
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
-    name: "", bio: "", lookingFor: "",
+    name: "", bio: "", lookingFor: "", avatar: "🤖",
     interests: [] as string[],
     socials: {} as Record<string, string>,
   });
+
+  const AVATAR_OPTIONS = [
+    "🤖", "🦞", "🦎", "🐱", "🐶", "🦊", "🐼", "🐸", "🦉", "🐝",
+    "🦋", "🐙", "🦐", "🐳", "🦈", "🐲", "🦄", "🔥", "⚡", "🌟",
+    "🎸", "🎯", "🚀", "💎", "⭐", "🌈", "🍄", "🌵", "🎭", "👾",
+  ];
   const [submitted, setSubmitted] = useState(false);
 
   const toggleInterest = (i: string) => {
@@ -48,7 +54,7 @@ export default function ProfilePage() {
           <p className="text-white/50 mb-8">活动开始后，它会替你主动社交，找到最值得认识的人。</p>
           <div className="bg-white/5 rounded-2xl p-6 mb-8 text-left">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xl">🤖</div>
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xl">{form.avatar}</div>
               <div>
                 <div className="font-bold">{form.name} 的 Agent</div>
                 <div className="text-sm text-white/40">{form.bio}</div>
@@ -106,6 +112,23 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold mb-2">你是谁？</h1>
             <p className="text-white/40 mb-8">这些信息会给你的 Agent 使用，帮它替你社交。</p>
             <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-white/60 mb-2">选个头像</label>
+                <div className="flex flex-wrap gap-2">
+                  {AVATAR_OPTIONS.map(emoji => (
+                    <button
+                      key={emoji}
+                      onClick={() => setForm(f => ({ ...f, avatar: emoji }))}
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl transition-all ${
+                        form.avatar === emoji
+                          ? "bg-violet-500/30 border-2 border-violet-500 scale-110"
+                          : "bg-white/5 border border-white/10 hover:border-white/30"
+                      }`}>
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div>
                 <label className="block text-sm text-white/60 mb-2">你的名字</label>
                 <input

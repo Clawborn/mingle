@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { fetchEvent, fetchParticipants, fetchSceneUpdates, getAgentColor } from "./api";
-import type { Event, Participant, SceneUpdate } from "./api";
+import { fetchEvent, fetchParticipants, fetchSceneUpdates, fetchLiveMessages, getAgentColor } from "./api";
+import type { Event, Participant, SceneUpdate, LiveMessage } from "./api";
 
 export interface ParticipantWithColor extends Participant {
   agentColor: string;
@@ -11,15 +11,17 @@ export function useEventData(eventId: string) {
   const [event, setEvent] = useState<Event | null>(null);
   const [participants, setParticipants] = useState<ParticipantWithColor[]>([]);
   const [sceneUpdates, setSceneUpdates] = useState<SceneUpdate[]>([]);
+  const [liveMessages, setLiveMessages] = useState<LiveMessage[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      const [ev, parts, scenes] = await Promise.all([
+      const [ev, parts, scenes, msgs] = await Promise.all([
         fetchEvent(eventId),
         fetchParticipants(eventId),
         fetchSceneUpdates(eventId),
+        fetchLiveMessages(eventId, 50),
       ]);
       if (cancelled) return;
       setEvent(ev);
@@ -27,11 +29,12 @@ export function useEventData(eventId: string) {
         parts.map((p, i) => ({ ...p, agentColor: getAgentColor(i) }))
       );
       setSceneUpdates(scenes);
+      setLiveMessages(msgs);
       setLoading(false);
     }
     load();
     return () => { cancelled = true; };
   }, [eventId]);
 
-  return { event, participants, sceneUpdates, loading };
+  return { event, participants, sceneUpdates, liveMessages, loading };
 }

@@ -90,6 +90,29 @@ export async function fetchSceneUpdates(eventId: string): Promise<SceneUpdate[]>
   return data || [];
 }
 
+export interface LiveMessage {
+  id: string;
+  agent_name: string;
+  avatar: string;
+  text: string;
+  type: string;
+  created_at: string;
+}
+
+export async function fetchLiveMessages(eventId: string, limit = 50): Promise<LiveMessage[]> {
+  const { data, error } = await supabase
+    .from("live_messages")
+    .select("id, agent_name, avatar, text, type, created_at")
+    .eq("event_id", eventId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.error("fetchLiveMessages error:", error.message);
+    return [];
+  }
+  return (data || []).reverse();
+}
+
 export async function fetchConversations(eventId: string) {
   const { data, error } = await supabase
     .from("conversations")
