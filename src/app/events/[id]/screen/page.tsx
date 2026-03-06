@@ -95,6 +95,9 @@ export default function ScreenPage() {
         zIndex: 10,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <a href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", cursor: "pointer" }}>
+            <img src="/logo.png" alt="Mingle" width={36} height={36} style={{ borderRadius: 8 }} />
+          </a>
           <span style={{ fontSize: 40 }}>🤝</span>
           <div>
             <div style={{ color: "#fff", fontSize: 24, fontWeight: 700 }}>Mingle Live</div>

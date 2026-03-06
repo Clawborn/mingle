@@ -94,10 +94,14 @@ export async function GET(
     return NextResponse.json(data);
   }
 
-  // List all conversations for the event
+  // List all conversations for the event (with participant details)
   const { data, error } = await supabase
     .from("conversations")
-    .select("id, status, participant_a_id, participant_b_id, match_reason, created_at, messages")
+    .select(`
+      id, status, match_reason, recommendation_a, recommendation_b, messages, created_at,
+      participant_a:participants!participant_a_id(id, name, agent_name, avatar, bio, interests, looking_for),
+      participant_b:participants!participant_b_id(id, name, agent_name, avatar, bio, interests, looking_for)
+    `)
     .eq("event_id", eventId)
     .order("created_at", { ascending: false });
 
