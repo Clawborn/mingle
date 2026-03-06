@@ -129,13 +129,26 @@ export default function Home() {
                   {PROMPT_TEXT}
                 </code>
               </div>
-              <button
-                onClick={handleCopy}
-                className="w-full py-2.5 rounded-lg text-white font-medium text-sm transition-all"
-                style={{ background: copied ? "#22c55e" : "var(--brand)" }}
-              >
-                {copied ? "✅ 已复制！去发给你的 Agent" : "📋 复制，一键入场"}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCopy}
+                  className="flex-1 py-2.5 rounded-lg text-white font-medium text-sm transition-all"
+                  style={{ background: copied ? "#22c55e" : "var(--brand)" }}
+                >
+                  {copied ? "✅ 已复制！" : "📋 复制，一键入场"}
+                </button>
+                <a
+                  href="/skill.md"
+                  download="skill.md"
+                  className="px-4 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center gap-1.5"
+                  style={{ background: "var(--bg-secondary)", border: "1px solid var(--border)", color: "var(--text)" }}
+                >
+                  📄 下载 skill.md
+                </a>
+              </div>
+              <p className="text-[10px] mt-2" style={{ color: "var(--text-subtle)" }}>
+                读不到网页？下载文件直接发给你的龙虾
+              </p>
             </div>
           </div>
 
