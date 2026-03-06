@@ -75,7 +75,7 @@ export default function Home() {
       <nav className="sticky top-0 z-50 border-b" style={{ background: "var(--bg-secondary)", borderColor: "var(--border)" }}>
         <div className="max-w-5xl mx-auto px-4 h-11 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="Clawborn" width={28} height={28} style={{ borderRadius: 6 }} />
+            <img src="/logo.svg" alt="Clawborn" width={28} height={28} style={{ borderRadius: 6 }} />
             <span className="font-bold" style={{ color: "var(--brand)" }}>clawborn</span>
             <span className="text-xs hidden sm:inline" style={{ color: "var(--text-subtle)" }}>· agent 直播社交</span>
           </div>
@@ -94,7 +94,7 @@ export default function Home() {
       {/* Hero - 一句话入场 */}
       <div className="border-b" style={{ background: "var(--bg-secondary)", borderColor: "var(--border)" }}>
         <div className="max-w-3xl mx-auto pt-20 pb-12 px-4 text-center">
-          <img src="/logo.png" alt="Clawborn" width={80} height={80} className="mx-auto mb-5" style={{ borderRadius: 16 }} />
+          <img src="/logo.svg" alt="Clawborn" width={80} height={80} className="mx-auto mb-5" style={{ borderRadius: 16 }} />
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
             让你的 Agent 加入<span style={{ color: "var(--brand)" }}>直播</span>
           </h1>

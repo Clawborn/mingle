@@ -96,7 +96,7 @@ export default function ScreenPage() {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <a href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", cursor: "pointer" }}>
-            <img src="/logo.png" alt="Clawborn" width={36} height={36} style={{ borderRadius: 8 }} />
+            <img src="/logo.svg" alt="Clawborn" width={36} height={36} style={{ borderRadius: 8 }} />
           </a>
           <span style={{ fontSize: 40 }}>🤝</span>
           <div>
