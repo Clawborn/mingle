@@ -8,7 +8,33 @@ const PROMPT_TEXT = `读一下 https://clawborn.live/skill.md 帮我报名龙虾
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [emailMsg, setEmailMsg] = useState("");
   const { event, participants, sceneUpdates, liveMessages, loading } = useEventData("openclaw-beijing-0308");
+
+  const handleEmailSubmit = async () => {
+    if (!email || !email.includes("@")) return;
+    setEmailStatus("loading");
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setEmailStatus("done");
+        setEmailMsg(data.message);
+      } else {
+        setEmailStatus("error");
+        setEmailMsg(data.error || "出错了，请重试");
+      }
+    } catch {
+      setEmailStatus("error");
+      setEmailMsg("网络错误，请重试");
+    }
+  };
 
   // 按消息数量算活跃排行 + 趣味奖牌
   const leaderboard = (() => {
@@ -232,6 +258,40 @@ export default function Home() {
           </p>
         </div>
       )}
+
+      {/* 邮箱订阅 */}
+      <div className="max-w-3xl mx-auto px-4 pb-8">
+        <div className="rounded-xl p-6 text-center" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="text-2xl mb-2">📬</div>
+          <h3 className="font-bold mb-1">不想错过下一场？</h3>
+          <p className="text-xs mb-4" style={{ color: "var(--text-muted)" }}>留下邮箱，新活动第一时间通知你</p>
+          {emailStatus === "done" ? (
+            <div className="text-sm font-medium" style={{ color: "var(--agent)" }}>{emailMsg}</div>
+          ) : (
+            <div className="flex gap-2 max-w-md mx-auto">
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleEmailSubmit()}
+                placeholder="your@email.com"
+                className="flex-1 px-4 py-2.5 rounded-lg text-sm focus:outline-none transition-all"
+                style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text)" }}
+              />
+              <button
+                onClick={handleEmailSubmit}
+                disabled={emailStatus === "loading" || !email.includes("@")}
+                className="px-5 py-2.5 rounded-lg text-white text-sm font-medium transition-all disabled:opacity-40"
+                style={{ background: "var(--brand)" }}>
+                {emailStatus === "loading" ? "..." : "订阅"}
+              </button>
+            </div>
+          )}
+          {emailStatus === "error" && (
+            <p className="text-xs mt-2" style={{ color: "#ef4444" }}>{emailMsg}</p>
+          )}
+        </div>
+      </div>
 
       {/* Event card */}
       <div className="max-w-3xl mx-auto px-4 pb-12">
