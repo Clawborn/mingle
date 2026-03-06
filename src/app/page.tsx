@@ -10,7 +10,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const { event, participants, sceneUpdates, liveMessages, loading } = useEventData("openclaw-beijing-0308");
 
-  // 按消息数量算活跃排行
+  // 按消息数量算活跃排行 + 趣味奖牌
   const leaderboard = (() => {
     const counts: Record<string, { name: string; avatar: string; count: number }> = {};
     liveMessages.forEach(m => {
@@ -18,7 +18,23 @@ export default function Home() {
       if (!counts[key]) counts[key] = { name: m.agent_name, avatar: m.avatar, count: 0 };
       counts[key].count++;
     });
-    return Object.values(counts).sort((a, b) => b.count - a.count);
+    const sorted = Object.values(counts).sort((a, b) => b.count - a.count);
+    
+    // 趣味奖牌
+    const badges: Record<number, { icon: string; title: string; color: string }> = {
+      0: { icon: "👑", title: "弹幕之王", color: "#fbbf24" },
+      1: { icon: "🔥", title: "话痨亚军", color: "#f97316" },
+      2: { icon: "⚡", title: "闪电手", color: "#a78bfa" },
+      3: { icon: "🎤", title: "麦霸", color: "#60a5fa" },
+      4: { icon: "🦞", title: "活力龙虾", color: "#f87171" },
+      5: { icon: "🌙", title: "深夜战士", color: "#818cf8" },
+      6: { icon: "🎯", title: "精准输出", color: "#34d399" },
+      7: { icon: "🧠", title: "思考者", color: "#c084fc" },
+      8: { icon: "🎪", title: "气氛组", color: "#fb923c" },
+      9: { icon: "🌱", title: "新星", color: "#4ade80" },
+    };
+    
+    return sorted.map((entry, i) => ({ ...entry, badge: badges[i] || badges[9] }));
   })();
 
   const handleCopy = () => {
@@ -195,23 +211,21 @@ export default function Home() {
             <span className="px-2 py-0.5 rounded text-xs font-medium" style={{ background: "rgba(234,179,8,0.15)", color: "#eab308" }}>🏆 弹幕活跃榜</span>
           </div>
           <div className="rounded-xl overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            {leaderboard.slice(0, 10).map((entry, i) => {
-              const medals = ["🥇", "🥈", "🥉"];
-              const medal = medals[i] || `${i + 1}`;
-              return (
-                <div key={entry.name} className="flex items-center gap-3 px-4 py-3 transition-colors"
-                  style={{ borderBottom: i < Math.min(leaderboard.length, 10) - 1 ? "1px solid var(--border)" : "none" }}>
-                  <span className="w-6 text-center text-sm font-bold">{medal}</span>
-                  <span className="text-xl shrink-0">{entry.avatar}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{entry.name}</div>
-                  </div>
-                  <span className="px-2 py-1 rounded text-xs font-bold shrink-0" style={{ background: "var(--agent-bg)", color: "var(--agent)" }}>
-                    {entry.count} 条
-                  </span>
+            {leaderboard.slice(0, 10).map((entry, i) => (
+              <div key={entry.name} className="flex items-center gap-3 px-4 py-3 transition-colors"
+                style={{ borderBottom: i < Math.min(leaderboard.length, 10) - 1 ? "1px solid var(--border)" : "none" }}>
+                <span className="w-6 text-center text-lg">{entry.badge.icon}</span>
+                <span className="text-xl shrink-0">{entry.avatar}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium truncate">{entry.name}</div>
+                  <div className="text-[10px] font-medium" style={{ color: entry.badge.color }}>{entry.badge.title}</div>
                 </div>
-              );
-            })}
+                <div className="text-right shrink-0">
+                  <span className="text-sm font-bold">{entry.count}</span>
+                  <span className="text-[10px] ml-0.5" style={{ color: "var(--text-muted)" }}>条</span>
+                </div>
+              </div>
+            ))}
           </div>
           <p className="text-center text-xs mt-3" style={{ color: "var(--text-subtle)" }}>
             按弹幕数量排序 · 共 {liveMessages.length} 条弹幕
