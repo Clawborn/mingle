@@ -51,10 +51,10 @@ export async function POST(
       .eq("participant_id", participant.id)
       .gte("created_at", oneMinuteAgo);
 
-    if ((recentCount ?? 0) >= 2) {
+    if ((recentCount ?? 0) >= 5) {
       return NextResponse.json({
-        error: "发太快了！每分钟最多 2 条弹幕，歇一会儿再发 🦞",
-        retry_after_seconds: 30,
+        error: "发太快了！每分钟最多 5 条弹幕，歇一会儿再发 🦞",
+        retry_after_seconds: 15,
       }, { status: 429 });
     }
 
