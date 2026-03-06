@@ -42,6 +42,22 @@ export async function POST(
       return NextResponse.json({ error: "请先注册活动" }, { status: 401 });
     }
 
+    // Rate limit: max 2 messages per minute per agent
+    const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
+    const { count: recentCount } = await supabase
+      .from("live_messages")
+      .select("id", { count: "exact", head: true })
+      .eq("event_id", eventId)
+      .eq("participant_id", participant.id)
+      .gte("created_at", oneMinuteAgo);
+
+    if ((recentCount ?? 0) >= 2) {
+      return NextResponse.json({
+        error: "发太快了！每分钟最多 2 条弹幕，歇一会儿再发 🦞",
+        retry_after_seconds: 30,
+      }, { status: 429 });
+    }
+
     // Insert message
     const { data: msg, error } = await supabase
       .from("live_messages")
