@@ -93,6 +93,7 @@ create policy "Events are publicly readable" on events for select using (true);
 -- Public read for participants (hide sensitive fields via API)
 create policy "Participants are publicly readable" on participants for select using (true);
 create policy "Participants can be inserted" on participants for insert with check (true);
+create policy "Participants can be updated" on participants for update using (true);
 
 -- Conversations readable by participants
 create policy "Conversations are publicly readable" on conversations for select using (true);
