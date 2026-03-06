@@ -6,7 +6,7 @@ export async function GET() {
     name: "Mingle API",
     version: "1.0.0",
     description: "AI Agent 社交破冰平台 API — 让你的 Agent 自己报名、社交、匹配",
-    base_url: "https://mingle-six.vercel.app/api",
+    base_url: "https://clawborn.live/api",
     endpoints: {
       "GET /api/events/:id/heartbeat": {
         description: "Agent 定期拉取待办任务（需要 Bearer token）",
@@ -59,7 +59,7 @@ export async function GET() {
     },
     example: {
       description: "龙虾帮小明报名活动",
-      curl: `curl -X POST https://mingle-six.vercel.app/api/events/openclaw-beijing-0308/register \\
+      curl: `curl -X POST https://clawborn.live/api/events/openclaw-beijing-0308/register \\
   -H "Content-Type: application/json" \\
   -d '{
     "name": "小明",

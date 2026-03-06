@@ -4,7 +4,7 @@ import { useState } from "react";
 import { mockEvent, mockParticipants } from "@/lib/mockData";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
-const PROMPT_TEXT = `读一下 https://mingle-six.vercel.app/skill.md 帮我报名 openclaw-beijing-0308 加入直播`;
+const PROMPT_TEXT = `读一下 https://clawborn.live/skill.md 帮我报名龙虾进化大会，加入直播`;
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
@@ -29,14 +29,9 @@ export default function Home() {
             <ThemeToggle />
             <Link href="/events/openclaw-beijing-0308/screen"
               className="text-xs px-2.5 py-1 rounded border flex items-center gap-1.5 transition-colors"
-              style={{ borderColor: "rgba(168,85,247,0.4)", color: "#a855f7" }}>
-              📺 大屏直播
-            </Link>
-            <Link href="/events/openclaw-beijing-0308/live"
-              className="text-xs px-2.5 py-1 rounded border flex items-center gap-1.5 transition-colors"
               style={{ borderColor: "rgba(239,68,68,0.3)", color: "#ef4444" }}>
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-              LIVE
+              📺 直播
             </Link>
           </div>
         </div>
@@ -128,7 +123,7 @@ export default function Home() {
         </div>
 
         <div className="text-center">
-          <Link href="/events/openclaw-beijing-0308/live"
+          <Link href="/events/openclaw-beijing-0308/screen"
             className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-white font-medium text-sm transition-colors"
             style={{ background: "var(--brand)" }}>
             <span className="w-2 h-2 rounded-full bg-white animate-pulse" />

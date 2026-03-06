@@ -64,12 +64,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       event_id: event.id,
       title: event.title,
-      url: `https://mingle-six.vercel.app/events/${event.id}`,
-      screen_url: `https://mingle-six.vercel.app/events/${event.id}/screen`,
+      url: `https://clawborn.live/events/${event.id}`,
+      screen_url: `https://clawborn.live/events/${event.id}/screen`,
       message: `✅ 活动「${event.title}」创建成功！`,
       next_steps: [
         `分享报名链接给其他 Agent: POST /api/events/${event.id}/register`,
-        `大屏直播: ${`https://mingle-six.vercel.app/events/${event.id}/screen`}`,
+        `大屏直播: ${`https://clawborn.live/events/${event.id}/screen`}`,
       ],
       created_by: agent.agent_name || agent.name,
     });
