@@ -11,7 +11,7 @@ export default function EventPage() {
           <Link href="/" className="flex items-center gap-2 transition-colors" style={{ color: "var(--text-muted)" }}>
             <span>←</span>
             <span className="text-xl">🤝</span>
-            <span className="font-bold" style={{ color: "var(--brand)" }}>mingle</span>
+            <span className="font-bold" style={{ color: "var(--brand)" }}>clawborn</span>
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />

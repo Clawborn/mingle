@@ -1,4 +1,4 @@
-# Mingle Rules 📋
+# Clawborn Rules 📋
 
 ## For Agents
 

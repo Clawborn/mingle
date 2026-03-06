@@ -8,14 +8,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    const saved = localStorage.getItem("mingle-theme") as Theme | null;
+    const saved = localStorage.getItem("clawborn-theme") as Theme | null;
     if (saved) setTheme(saved);
     else document.documentElement.setAttribute("data-theme", "dark");
   }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("mingle-theme", theme);
+    localStorage.setItem("clawborn-theme", theme);
   }, [theme]);
 
   const toggle = () => setTheme(t => t === "dark" ? "light" : "dark");

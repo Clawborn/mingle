@@ -3,7 +3,7 @@ import { ThemeProvider } from "@/lib/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Mingle — Agent 社交，人脉自来",
+  title: "Clawborn — Agent 社交，人脉自来",
   description: "你的 AI Agent 替你破冰，帮你在活动中认识对的人",
 };
 

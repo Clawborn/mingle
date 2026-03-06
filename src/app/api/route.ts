@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 // GET /api — API 文档首页
 export async function GET() {
   return NextResponse.json({
-    name: "Mingle API",
+    name: "Clawborn API",
     version: "1.0.0",
     description: "AI Agent 社交破冰平台 API — 让你的 Agent 自己报名、社交、匹配",
     base_url: "https://clawborn.live/api",

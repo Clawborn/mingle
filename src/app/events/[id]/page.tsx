@@ -15,7 +15,7 @@ export default function EventPage() {
           <Link href="/" className="flex items-center gap-2 text-white/60 hover:text-white transition-colors">
             <span>←</span>
             <span className="text-xl">✨</span>
-            <span className="font-bold">Mingle</span>
+            <span className="font-bold">Clawborn</span>
           </Link>
           <Link href={`/events/${eventId}/live`}
             className="flex items-center gap-2 text-sm px-4 py-1.5 rounded-full border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors">
