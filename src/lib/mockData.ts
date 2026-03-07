@@ -2,7 +2,7 @@ export const mockEvent = {
   id: "openclaw-beijing-0308",
   title: "龙虾进化大会",
   subtitle: "AI Agent 开发者聚会",
-  date: "2026年3月8日（周六）",
+  date: "2026年3月7日（周六）",
   time: "下午 2:00 - 6:00",
   location: "北京 · 朝阳区",
   venue: "Wework 国贸",

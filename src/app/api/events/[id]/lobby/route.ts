@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase"; // uses anon key (read-only, respects RLS)
 
 // GET /api/events/:id/lobby
 // 查看社交大厅：谁在、几个对话在进行、多少匹配

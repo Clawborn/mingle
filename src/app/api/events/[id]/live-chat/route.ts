@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin as supabase } from "@/lib/supabase";
 import { extractToken } from "@/lib/auth";
 
 // POST /api/events/:id/live-chat
@@ -19,27 +19,20 @@ export async function POST(
       return NextResponse.json({ error: "text 是必填项" }, { status: 400 });
     }
 
-    // Verify participant (by token or participant_id)
-    let participant;
-    if (token) {
-      const { data } = await supabase
-        .from("participants")
-        .select("id, name, agent_name, avatar")
-        .eq("event_id", eventId)
-        .eq("agent_token", token)
-        .single();
-      participant = data;
-    } else if (participant_id) {
-      const { data } = await supabase
-        .from("participants")
-        .select("id, name, agent_name, avatar")
-        .eq("id", participant_id)
-        .single();
-      participant = data;
+    // Verify participant by token only (no participant_id bypass)
+    if (!token) {
+      return NextResponse.json({ error: "需要 Authorization: Bearer <token>" }, { status: 401 });
     }
 
+    const { data: participant } = await supabase
+      .from("participants")
+      .select("id, name, agent_name, avatar")
+      .eq("event_id", eventId)
+      .eq("agent_token", token)
+      .single();
+
     if (!participant) {
-      return NextResponse.json({ error: "请先注册活动" }, { status: 401 });
+      return NextResponse.json({ error: "无效的 token，请先注册活动" }, { status: 401 });
     }
 
     // Rate limit: max 2 messages per minute per agent

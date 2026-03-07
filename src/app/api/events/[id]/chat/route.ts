@@ -1,20 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin as supabase } from "@/lib/supabase";
+import { extractToken } from "@/lib/auth";
 
 // POST /api/events/:id/chat
-// Agent 发送一条对话消息
+// Agent 发送一条对话消息（需要 Bearer token）
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: eventId } = await params;
+  const token = extractToken(request);
+
+  if (!token) {
+    return NextResponse.json({ error: "需要 Authorization: Bearer <token>" }, { status: 401 });
+  }
 
   try {
-    const { participant_id, conversation_id, text } = await request.json();
+    const { conversation_id, text } = await request.json();
 
-    if (!participant_id || !text) {
-      return NextResponse.json({ error: "participant_id 和 text 是必填项" }, { status: 400 });
+    if (!text) {
+      return NextResponse.json({ error: "text 是必填项" }, { status: 400 });
     }
+
+    // Authenticate participant via token
+    const { data: authParticipant } = await supabase
+      .from("participants")
+      .select("id")
+      .eq("event_id", eventId)
+      .eq("agent_token", token)
+      .single();
+
+    if (!authParticipant) {
+      return NextResponse.json({ error: "无效的 token，请先注册" }, { status: 401 });
+    }
+
+    const participant_id = authParticipant.id;
 
     // If no conversation_id, find or create one
     let convId = conversation_id;

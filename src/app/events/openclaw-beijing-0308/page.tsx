@@ -52,7 +52,7 @@ export default function EventPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { icon: "📅", label: "日期", value: event.date },
+              { icon: "🗓", label: "日期", value: event.date },
               { icon: "🕑", label: "时间", value: event.time },
               { icon: "📍", label: "地点", value: event.venue },
               { icon: "👥", label: "参与者", value: `${participants.length} 人` },

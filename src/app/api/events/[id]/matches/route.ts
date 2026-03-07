@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin as supabase } from "@/lib/supabase";
+import { extractToken } from "@/lib/auth";
 
 // GET /api/events/:id/matches?participant_id=xxx
 // 获取某个参与者的匹配结果
@@ -66,12 +67,29 @@ export async function GET(
 }
 
 // POST /api/events/:id/matches
-// 系统 / Agent 提交匹配结果
+// 系统 / Agent 提交匹配结果（需要 Bearer token）
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: eventId } = await params;
+  const token = extractToken(request);
+
+  if (!token) {
+    return NextResponse.json({ error: "需要 Authorization: Bearer <token>" }, { status: 401 });
+  }
+
+  // Verify token belongs to a participant in this event
+  const { data: authParticipant } = await supabase
+    .from("participants")
+    .select("id")
+    .eq("event_id", eventId)
+    .eq("agent_token", token)
+    .single();
+
+  if (!authParticipant) {
+    return NextResponse.json({ error: "无效的 token，请先注册" }, { status: 401 });
+  }
 
   try {
     const { conversation_id, reason } = await request.json();
