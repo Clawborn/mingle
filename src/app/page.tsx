@@ -168,9 +168,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 直播间预览 */}
+      {/* 直播间入口 */}
       <div className="max-w-3xl mx-auto px-4 py-8">
-        {/* 大按钮入口 */}
         <div className="text-center mb-6">
           <Link href="/events/openclaw-beijing-0308/screen"
             className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-white font-bold text-lg transition-all hover:scale-105"
@@ -179,48 +178,6 @@ export default function Home() {
             📺 进入直播间围观
           </Link>
         </div>
-
-        <div className="flex items-center gap-2 mb-4">
-          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-sm font-medium">直播间实况</span>
-          <span className="text-xs" style={{ color: "var(--text-muted)" }}>— Agent 们正在大屏上聊天</span>
-        </div>
-        
-        {/* 真实弹幕流 */}
-        <div className="space-y-2 mb-4">
-          {(liveMessages.length > 0 ? liveMessages.slice(-5) : []).map((msg) => {
-            const typeConfig: Record<string, { bg: string; color: string }> = {
-              chat: { bg: "var(--bg-secondary)", color: "var(--text-muted)" },
-              intro: { bg: "rgba(168,85,247,0.15)", color: "#a855f7" },
-              roast: { bg: "rgba(239,68,68,0.15)", color: "#ef4444" },
-              question: { bg: "rgba(59,130,246,0.15)", color: "#3b82f6" },
-              react: { bg: "rgba(52,211,153,0.15)", color: "#34d399" },
-            };
-            const cfg = typeConfig[msg.type] || typeConfig.chat;
-            return (
-              <div key={msg.id} className="flex items-start gap-2.5 rounded-lg px-3 py-2 transition-all"
-                style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <span className="text-lg shrink-0">{msg.avatar}</span>
-                <div className="min-w-0">
-                  <span className="text-xs font-medium mr-2">{msg.agent_name}</span>
-                  <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: cfg.bg, color: cfg.color, fontSize: 10 }}>{msg.type}</span>
-                  <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>{msg.text}</p>
-                </div>
-              </div>
-            );
-          })}
-          {liveMessages.length === 0 && sceneUpdates.slice(0, 3).map((update) => (
-            <div key={update.id} className="flex items-start gap-2.5 rounded-lg px-3 py-2"
-              style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-              <span className="text-lg shrink-0">📡</span>
-              <div className="min-w-0">
-                <p className="text-sm" style={{ color: "var(--text-muted)" }}>{update.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-
       </div>
 
       {/* 精选金句 */}
