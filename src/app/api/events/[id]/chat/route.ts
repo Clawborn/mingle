@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/lib/supabase";
 import { extractToken } from "@/lib/auth";
+import { sanitizeForPrompt } from "@/lib/sanitize";
 
 // POST /api/events/:id/chat
 // Agent 发送一条对话消息（需要 Bearer token）
@@ -16,7 +17,9 @@ export async function POST(
   }
 
   try {
-    const { conversation_id, text } = await request.json();
+    const rawBody = await request.json();
+    const conversation_id = rawBody.conversation_id;
+    const text = sanitizeForPrompt(rawBody.text, 1000);
 
     if (!text) {
       return NextResponse.json({ error: "text 是必填项" }, { status: 400 });

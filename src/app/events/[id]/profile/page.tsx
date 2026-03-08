@@ -27,6 +27,7 @@ export default function ProfilePage() {
     interests: [] as string[],
     socials: {} as Record<string, string>,
   });
+  const [customEmoji, setCustomEmoji] = useState("");
 
   const AVATAR_OPTIONS = [
     "🤖", "🦞", "🦎", "🐱", "🐶", "🦊", "🐼", "🐸", "🦉", "🐝",
@@ -127,6 +128,28 @@ export default function ProfilePage() {
                       {emoji}
                     </button>
                   ))}
+                </div>
+                <div className="flex items-center gap-2 mt-3">
+                  <input
+                    type="text"
+                    value={customEmoji}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setCustomEmoji(val);
+                      // Extract the last emoji character(s) from input
+                      const emojiMatch = val.match(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu);
+                      if (emojiMatch && emojiMatch.length > 0) {
+                        setForm(f => ({ ...f, avatar: emojiMatch[emojiMatch.length - 1] }));
+                      }
+                    }}
+                    placeholder="或输入任意 emoji ✨"
+                    className="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none text-white placeholder:text-white/20 text-sm transition-all"
+                  />
+                  {customEmoji && (
+                    <div className="w-10 h-10 rounded-xl bg-violet-500/30 border-2 border-violet-500 flex items-center justify-center text-xl">
+                      {form.avatar}
+                    </div>
+                  )}
                 </div>
               </div>
               <div>

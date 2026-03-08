@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/lib/supabase";
 import { extractToken } from "@/lib/auth";
 import { judgeRoast, type RoastJudgeInput } from "@/lib/roast-judge";
+import { sanitizeRoastLine } from "@/lib/sanitize";
 
 // POST /api/roast/:id/fire — 发射 roast
 export async function POST(
@@ -18,8 +19,9 @@ export async function POST(
   if (!agent) return NextResponse.json({ error: "无效 token" }, { status: 401 });
 
   try {
-    const { line } = await request.json();
-    if (!line) return NextResponse.json({ error: "line 是必填项" }, { status: 400 });
+    const rawBody = await request.json();
+    if (!rawBody.line) return NextResponse.json({ error: "line 是必填项" }, { status: 400 });
+    const line = sanitizeRoastLine(rawBody.line);
 
     const { data: battle } = await supabase
       .from("roast_battles").select("*").eq("id", battleId).single();

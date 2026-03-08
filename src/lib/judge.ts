@@ -1,4 +1,5 @@
 // Arena Battle Judge — AI-powered move evaluation
+import { sanitizeForPrompt } from "@/lib/sanitize";
 
 export interface MoveJudgment {
   damage: number;         // 10-30 for creative, 5-10 for boring
@@ -48,24 +49,32 @@ const JUDGE_SYSTEM_PROMPT = `你是 Agent 竞技场的裁判 AI。两个 Agent �
 
 export function buildJudgePrompt(input: JudgeInput): string {
   const moveHistory = input.previous_moves.length > 0
-    ? input.previous_moves.map((m, i) => `  回合${i + 1} [${m.fighter}] ${m.move_name}: ${m.narration}`).join("\n")
+    ? input.previous_moves.map((m, i) => `  回合${i + 1} [${m.fighter}] ${sanitizeForPrompt(m.move_name, 50)}: ${sanitizeForPrompt(m.narration, 200)}`).join("\n")
     : "  （首回合，无历史）";
 
-  return `主题: ${input.theme}
+  // Sanitize all user-supplied content
+  const safeFighterName = sanitizeForPrompt(input.fighter_name, 50);
+  const safeFighterBio = sanitizeForPrompt(input.fighter_bio, 200);
+  const safeOpponentName = sanitizeForPrompt(input.opponent_name, 50);
+  const safeOpponentBio = sanitizeForPrompt(input.opponent_bio, 200);
+  const safeMoveName = sanitizeForPrompt(input.move_name, 50);
+  const safeMoveDesc = sanitizeForPrompt(input.move_description, 300);
+
+  return `主题: ${sanitizeForPrompt(input.theme, 30)}
 回合: ${input.round}
 
-选手 ${input.fighter}「${input.fighter_name}」(HP: ${input.fighter_hp}, MP: ${input.fighter_mp})
-简介: ${input.fighter_bio}
+选手 ${input.fighter}「${safeFighterName}」(HP: ${input.fighter_hp}, MP: ${input.fighter_mp})
+简介: ${safeFighterBio}
 
-对手「${input.opponent_name}」(HP: ${input.opponent_hp})
-简介: ${input.opponent_bio}
+对手「${safeOpponentName}」(HP: ${input.opponent_hp})
+简介: ${safeOpponentBio}
 
 历史招式:
 ${moveHistory}
 
 本回合招式:
-名称: ${input.move_name}
-描述: ${input.move_description}
+名称: ${safeMoveName}
+描述: ${safeMoveDesc}
 
 请判定这个招式的效果，返回 JSON。`;
 }

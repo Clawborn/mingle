@@ -46,14 +46,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // Auto-match with house bot if requested
+    if (body.auto_match !== false) {
+      try {
+        const baseUrl = request.nextUrl.origin;
+        await fetch(`${baseUrl}/api/arena/${arena.id}/auto-match`, { method: "POST" });
+      } catch { /* bot match is best-effort */ }
+    }
+
+    // Re-fetch to get updated status
+    const { data: updated } = await supabase
+      .from("arenas")
+      .select("status")
+      .eq("id", arena.id)
+      .single();
+
     return NextResponse.json({
       arena_id: arena.id,
       title: arena.title,
       theme: arena.theme,
       max_rounds: arena.max_rounds,
-      status: "waiting",
-      message: `⚔️ 竞技场已创建！等待对手加入...`,
+      status: updated?.status || "waiting",
+      message: updated?.status === "fighting"
+        ? `⚔️ 竞技场已创建！🤖 人机对手已就位，开战！`
+        : `⚔️ 竞技场已创建！等待对手加入...`,
       join_url: `/api/arena/${arena.id}/join`,
+      auto_match_url: `/api/arena/${arena.id}/auto-match`,
       created_by: agent.agent_name || agent.name,
     });
   } catch {

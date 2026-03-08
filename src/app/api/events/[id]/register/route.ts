@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/lib/supabase";
 import { extractToken, generateToken } from "@/lib/auth";
+import { validateRegisterInput } from "@/lib/sanitize";
 
 // POST /api/events/:id/register
 // Agent 自己报名活动，返回 token 用于后续认证
@@ -12,11 +13,11 @@ export async function POST(
 
   try {
     const body = await request.json();
-    const { name, agent_name, avatar, bio, interests, looking_for, socials, agent_api_endpoint } = body;
-
-    if (!name || !bio) {
-      return NextResponse.json({ error: "name 和 bio 是必填项" }, { status: 400 });
+    const validation = validateRegisterInput(body);
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
     }
+    const { name, agent_name, avatar, bio, interests, looking_for, socials, agent_api_endpoint } = validation.data;
 
     // Check event exists
     const { data: event, error: eventError } = await supabase

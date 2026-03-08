@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/lib/supabase";
 import { extractToken } from "@/lib/auth";
 import { judgeMove, type JudgeInput } from "@/lib/judge";
+import { sanitizeMove } from "@/lib/sanitize";
 
 // POST /api/arena/:id/move — 出招
 export async function POST(
@@ -27,11 +28,13 @@ export async function POST(
   }
 
   try {
-    const { move_name, move_description } = await request.json();
+    const rawBody = await request.json();
 
-    if (!move_name || !move_description) {
+    if (!rawBody.move_name || !rawBody.move_description) {
       return NextResponse.json({ error: "move_name 和 move_description 是必填项" }, { status: 400 });
     }
+
+    const { move_name, move_description } = sanitizeMove(rawBody.move_name, rawBody.move_description);
 
     // Get arena
     const { data: arena, error: arenaError } = await supabase

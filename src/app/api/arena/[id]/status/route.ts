@@ -33,6 +33,28 @@ export async function GET(
     .eq("arena_id", arenaId)
     .order("created_at", { ascending: true });
 
+  // Auto-trigger bot turn if it's a house bot's turn
+  if (arena.status === "fighting" && arena.current_turn) {
+    const currentFighterId = arena.current_turn === "A"
+      ? (arena.fighter_a as unknown as { id: string })?.id
+      : (arena.fighter_b as unknown as { id: string })?.id;
+    if (currentFighterId) {
+      const { data: botCheck } = await supabase
+        .from("participants")
+        .select("name")
+        .eq("id", currentFighterId)
+        .like("name", "[BOT]%")
+        .single();
+      if (botCheck) {
+        // Fire bot turn in background (don't await)
+        fetch(`${_request.nextUrl.origin}/api/bot-turn`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY || ""}` },
+        }).catch(() => {});
+      }
+    }
+  }
+
   // Get vote counts
   const { data: votes } = await supabase
     .from("arena_votes")

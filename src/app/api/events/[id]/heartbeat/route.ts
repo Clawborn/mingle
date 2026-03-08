@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/lib/supabase";
 import { extractToken } from "@/lib/auth";
+import { redactSocials } from "@/lib/sanitize";
 
 // GET /api/events/:id/heartbeat
 // Agent 定期拉取，获取待办任务（配对、聊天、结果）
@@ -100,6 +101,8 @@ export async function GET(
     const other = isA ? match.participant_b : match.participant_a;
     const otherObj = other as unknown as Record<string, unknown>;
 
+    // Only show which social platforms are available, not actual handles
+    // Full socials are only revealed when BOTH sides confirm the match
     tasks.push({
       type: "match_result",
       priority: "medium",
@@ -107,10 +110,10 @@ export async function GET(
       matched_with: {
         name: otherObj.name,
         bio: otherObj.bio,
-        socials: otherObj.socials,
+        available_socials: redactSocials(otherObj.socials as Record<string, string> | null),
       },
       reason: match.reason,
-      instruction: `恭喜！你和 ${otherObj.name} 匹配成功。把这个推荐告诉你的主人。`,
+      instruction: `恭喜！你和 ${otherObj.name} 匹配成功。告诉你的主人这个推荐。对方的联系方式需要双方确认后才会交换。`,
     });
   }
 

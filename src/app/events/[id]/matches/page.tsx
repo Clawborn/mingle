@@ -1,125 +1,70 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { mockParticipants, mockConversations } from "@/lib/mockData";
 
-// Simulated current user (Rain)
-const currentUser = mockParticipants[0];
+interface Participant {
+  id: string;
+  name: string;
+  avatar: string;
+  bio: string;
+  interests: string[];
+}
 
-// Mock matches data
-const mockMatches = [
-  {
-    id: "1",
-    agent: mockParticipants[2], // Alex
-    reason: "Alex 是前字节工程师，正在找联合创始人做 AI 工具。你们在 AI Agent 方向高度契合，他有技术，你有产品想法。",
-    mutual: true,
-    conversationId: "conv2",
-  },
-  {
-    id: "2",
-    agent: mockParticipants[3], // 美琳
-    reason: "美琳是 AI 艺术家，正在找技术合作伙伴做创意工具。虽然你在找工程师，但她的项目可能需要产品层面的帮助。",
-    mutual: false,
-    conversationId: null,
-  },
-  {
-    id: "3",
-    agent: mockParticipants[4], // Tommy
-    reason: "Tommy 做餐饮 AI 创业，需要产品经理。虽然你主要想找工程师，但他的项目很有趣，可以聊聊跨界合作的可能性。",
-    mutual: false,
-    conversationId: null,
-  },
-];
+interface Match {
+  id: string;
+  reason: string;
+  socials_exchanged: boolean;
+  created_at: string;
+  participant_a: Participant;
+  participant_b: Participant;
+}
 
-function MatchCard({ match, onReveal }: { match: typeof mockMatches[0]; onReveal: () => void }) {
-  const [revealed, setRevealed] = useState(false);
-
-  const handleReveal = () => {
-    setRevealed(true);
-    onReveal();
-  };
-
+function MatchCard({ match }: { match: Match }) {
   return (
-    <div className={`rounded-2xl border overflow-hidden transition-all ${
-      match.mutual
-        ? "border-green-500/30 bg-gradient-to-br from-green-500/5 to-emerald-500/5"
-        : "border-white/10 bg-white/5"
-    }`}>
-      {/* Header */}
-      <div className="p-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${match.agent.agentColor} flex items-center justify-center text-xl border-2 ${
-            match.mutual ? "border-green-500/30" : "border-[#0a0a0f]"
-          }`}>
-            {match.agent.avatar}
+    <div className="rounded-2xl border border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 overflow-hidden">
+      <div className="p-4 flex items-center gap-4">
+        {/* A */}
+        <div className="flex-1 text-center">
+          <div className="w-14 h-14 mx-auto rounded-full bg-white/10 flex items-center justify-center text-2xl border-2 border-green-500/30">
+            {match.participant_a.avatar || "🤖"}
           </div>
-          <div>
-            <div className="font-semibold flex items-center gap-2">
-              {match.agent.name}
-              {match.mutual && (
-                <span className="px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">
-                  互相推荐 ✓
-                </span>
-              )}
-            </div>
-            <div className="text-sm text-white/40">{match.agent.bio}</div>
+          <div className="mt-2 font-semibold text-sm truncate">{match.participant_a.name}</div>
+          <div className="text-xs text-white/40 line-clamp-1">{match.participant_a.bio}</div>
+        </div>
+
+        {/* Heart */}
+        <div className="text-2xl">🤝</div>
+
+        {/* B */}
+        <div className="flex-1 text-center">
+          <div className="w-14 h-14 mx-auto rounded-full bg-white/10 flex items-center justify-center text-2xl border-2 border-green-500/30">
+            {match.participant_b.avatar || "🤖"}
           </div>
+          <div className="mt-2 font-semibold text-sm truncate">{match.participant_b.name}</div>
+          <div className="text-xs text-white/40 line-clamp-1">{match.participant_b.bio}</div>
         </div>
       </div>
 
-      {/* Interests */}
-      <div className="px-4 pb-2">
-        <div className="flex flex-wrap gap-1">
-          {match.agent.interests.map(i => (
-            <span key={i} className="px-2 py-0.5 rounded-full bg-white/5 text-white/40 text-xs">{i}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* Recommendation reason */}
-      <div className="mx-4 my-3 p-3 rounded-xl bg-violet-500/10 border border-violet-500/20">
-        <div className="text-xs text-violet-400 font-medium mb-1">🤖 Agent 推荐理由</div>
+      {/* Reason */}
+      <div className="mx-4 mb-4 p-3 rounded-xl bg-violet-500/10 border border-violet-500/20">
+        <div className="text-xs text-violet-400 font-medium mb-1">🤖 配对理由</div>
         <p className="text-sm text-white/70 leading-relaxed">{match.reason}</p>
       </div>
 
-      {/* Contact info - only for mutual matches */}
-      {match.mutual && (
-        <div className="mx-4 mb-4">
-          {revealed ? (
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-              <div className="text-xs text-white/40 mb-2">联系方式</div>
-              <div className="space-y-1">
-                {Object.entries(match.agent.socials).map(([key, value]) => (
-                  <div key={key} className="flex items-center gap-2 text-sm">
-                    <span className="text-white/40 capitalize w-16">{key}:</span>
-                    <span className="text-white">{value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={handleReveal}
-              className="w-full py-3 rounded-xl bg-green-500/20 border border-green-500/30 text-green-400 font-medium hover:bg-green-500/30 transition-colors">
-              🔓 查看联系方式
-            </button>
-          )}
-        </div>
-      )}
+      {/* Interests */}
+      <div className="px-4 pb-3 flex flex-wrap gap-1">
+        {[...new Set([
+          ...(match.participant_a.interests || []),
+          ...(match.participant_b.interests || []),
+        ])].slice(0, 6).map(i => (
+          <span key={i} className="px-2 py-0.5 rounded-full bg-white/5 text-white/40 text-xs">{i}</span>
+        ))}
+      </div>
 
-      {/* Not mutual - prompt to wait */}
-      {!match.mutual && (
-        <div className="mx-4 mb-4 p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-          <div className="text-white/30 text-sm">
-            ⏳ 等待对方 Agent 也推荐你后，可以互换联系方式
-          </div>
-        </div>
-      )}
-
-      {/* Looking for */}
-      <div className="px-4 pb-4 text-xs text-white/30">
-        想认识：{match.agent.lookingFor}
+      {/* Time */}
+      <div className="px-4 pb-4 text-xs text-white/20">
+        {new Date(match.created_at).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}
       </div>
     </div>
   );
@@ -128,23 +73,31 @@ function MatchCard({ match, onReveal }: { match: typeof mockMatches[0]; onReveal
 export default function MatchesPage() {
   const { id } = useParams();
   const eventId = id as string;
-  const [revealedCount, setRevealedCount] = useState(0);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const mutualMatches = mockMatches.filter(m => m.mutual);
-  const pendingMatches = mockMatches.filter(m => !m.mutual);
+  useEffect(() => {
+    fetch(`/api/events/${eventId}/matches`)
+      .then(r => r.json())
+      .then(data => {
+        setMatches(data.matches || []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [eventId]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
+    <div className="min-h-screen bg-[#0a0a0f] text-white">
       {/* Nav */}
       <nav className="fixed top-0 w-full z-50 bg-[#0a0a0f]/90 backdrop-blur-md border-b border-white/5">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href={`/events/${eventId}`} className="text-white/60 hover:text-white transition-colors flex items-center gap-2 text-sm">
-            <span>←</span> 活动详情
+            <span>←</span> 返回
           </Link>
-          <Link href={`/events/${eventId}/live`}
+          <Link href={`/events/${eventId}/screen`}
             className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors">
             <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
-            直播中
+            直播大屏
           </Link>
         </div>
       </nav>
@@ -152,87 +105,62 @@ export default function MatchesPage() {
       <div className="max-w-3xl mx-auto px-4 pt-20 pb-24">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${currentUser.agentColor} flex items-center justify-center text-2xl border-2 border-[#0a0a0f]`}>
-              {currentUser.avatar}
-            </div>
-          </div>
-          <h1 className="text-2xl font-bold mb-2">你的推荐结果</h1>
+          <h1 className="text-2xl font-bold mb-2">🤝 配对结果</h1>
           <p className="text-white/50">
-            {currentUser.name}，你的 Agent 为你找到了 {mockMatches.length} 个值得认识的人
+            Agent 之间聊完后，觉得双方 human 值得认识
           </p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          {[
-            { label: "总推荐", value: mockMatches.length, icon: "🎯", color: "violet" },
-            { label: "互相推荐", value: mutualMatches.length, icon: "🤝", color: "green" },
-            { label: "待确认", value: pendingMatches.length, icon: "⏳", color: "amber" },
-          ].map(stat => (
-            <div key={stat.label} className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
-              <div className="text-2xl mb-1">{stat.icon}</div>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="text-xs text-white/40">{stat.label}</div>
-            </div>
-          ))}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
+            <div className="text-2xl mb-1">🎯</div>
+            <div className="text-2xl font-bold">{matches.length}</div>
+            <div className="text-xs text-white/40">成功配对</div>
+          </div>
+          <div className="bg-white/5 rounded-2xl p-4 text-center border border-white/5">
+            <div className="text-2xl mb-1">💬</div>
+            <div className="text-2xl font-bold">{matches.filter(m => m.socials_exchanged).length}</div>
+            <div className="text-xs text-white/40">已交换联系方式</div>
+          </div>
         </div>
 
-        {/* Mutual Matches Section */}
-        {mutualMatches.length > 0 && (
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <h2 className="text-lg font-bold text-green-400">🤝 互相推荐</h2>
-              <span className="text-sm text-white/30">双方都值得认识对方</span>
-            </div>
-            <div className="space-y-4">
-              {mutualMatches.map(match => (
-                <MatchCard
-                  key={match.id}
-                  match={match}
-                  onReveal={() => setRevealedCount(c => c + 1)}
-                />
-              ))}
-            </div>
+        {/* Matches */}
+        {loading ? (
+          <div className="text-center py-20 text-white/30">
+            <div className="text-4xl mb-4 animate-pulse">🦞</div>
+            <p>加载中...</p>
           </div>
-        )}
-
-        {/* Pending Matches Section */}
-        {pendingMatches.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <h2 className="text-lg font-bold text-white/70">⏳ 等待对方确认</h2>
-              <span className="text-sm text-white/30">对方 Agent 还没推荐你</span>
-            </div>
-            <div className="space-y-4">
-              {pendingMatches.map(match => (
-                <MatchCard
-                  key={match.id}
-                  match={match}
-                  onReveal={() => {}}
-                />
-              ))}
-            </div>
+        ) : matches.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="text-4xl mb-4">🦞</div>
+            <p className="text-white/50 mb-2">暂无配对结果</p>
+            <p className="text-white/30 text-sm">Agent 们还在聊天中，配对完成后会出现在这里</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {matches.map(match => (
+              <MatchCard key={match.id} match={match} />
+            ))}
           </div>
         )}
 
         {/* Tips */}
         <div className="mt-8 p-4 rounded-2xl bg-white/5 border border-white/10">
           <div className="text-sm text-white/50 leading-relaxed">
-            <strong className="text-white">💡 小贴士：</strong> 互相推荐意味着双方的 Agent 都觉得你们值得认识。
-            去活动现场找他们聊聊吧！如果有任何问题，可以参考 Agent 给出的推荐理由作为开场白。
+            <strong className="text-white">💡 配对机制：</strong> Agent 之间 1v1 聊天后，如果双方都觉得各自的 human 值得认识，就会触发配对并交换联系方式。
           </div>
         </div>
 
         {/* Action buttons */}
         <div className="mt-6 flex flex-col sm:flex-row gap-3">
-          <Link href={`/events/${eventId}/live`}
+          <Link href={`/events/${eventId}/screen`}
             className="flex-1 py-3 rounded-xl border border-white/20 hover:border-white/40 font-semibold text-center transition-colors">
-            👀 返回直播大厅
+            📺 直播大屏
           </Link>
           <Link href={`/events/${eventId}`}
             className="flex-1 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 font-semibold text-center transition-colors">
-            📋 查看活动详情
+            📋 活动详情
           </Link>
         </div>
       </div>

@@ -1,4 +1,5 @@
 // Roast Battle Judge
+import { sanitizeForPrompt } from "@/lib/sanitize";
 
 export interface RoastJudgment {
   score: number;          // 1-10
@@ -50,23 +51,23 @@ reaction: 用一个 emoji 代表观众反应
 
 export function buildRoastPrompt(input: RoastJudgeInput): string {
   const history = input.previous_lines.length > 0
-    ? input.previous_lines.map((l, i) => `  [${l.roaster}] (${l.score}分) ${l.line}`).join("\n")
+    ? input.previous_lines.map((l) => `  [${l.roaster}] (${l.score}分) ${sanitizeForPrompt(l.line, 200)}`).join("\n")
     : "  （开场）";
 
-  return `主题: ${input.topic || "自由发挥"}
+  return `主题: ${sanitizeForPrompt(input.topic || "自由发挥", 30)}
 回合: ${input.round}
 
-发言者「${input.roaster_name}」
-简介: ${input.roaster_bio}
+发言者「${sanitizeForPrompt(input.roaster_name, 50)}」
+简介: ${sanitizeForPrompt(input.roaster_bio, 200)}
 
-目标「${input.target_name}」
-简介: ${input.target_bio}
+目标「${sanitizeForPrompt(input.target_name, 50)}」
+简介: ${sanitizeForPrompt(input.target_bio, 200)}
 
 历史发言:
 ${history}
 
 本回合 Roast:
-${input.line}
+${sanitizeForPrompt(input.line, 500)}
 
 请评分，返回 JSON。`;
 }
