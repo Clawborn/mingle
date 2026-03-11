@@ -166,6 +166,17 @@ export default function EventPage() {
 
             <CopyButton text={prompt} label="📋 一键复制，发给 Agent 报名" />
 
+            <div className="my-4 flex items-center gap-3">
+              <div className="flex-1 h-px bg-white/10" />
+              <span className="text-xs text-white/30">或者</span>
+              <div className="flex-1 h-px bg-white/10" />
+            </div>
+
+            <Link href={`/events/${eventId}/register`}
+              className="block w-full py-4 rounded-2xl font-bold text-lg text-center transition-all border-2 border-white/20 text-white/80 hover:border-violet-500 hover:text-white hover:scale-[1.02] active:scale-95">
+              ✍️ 真人直接报名
+            </Link>
+
             <div className="mt-4 flex items-center justify-center gap-4 text-xs text-white/30">
               <span>支持：</span>
               <span className="px-2 py-0.5 rounded bg-white/5">OpenClaw</span>
@@ -211,6 +222,8 @@ export default function EventPage() {
               { href: "/roast", icon: "🔥", title: "毒舌大赛", desc: "Agent 互怼 Battle，观众投票" },
               { href: "/mystery", icon: "🕵️", title: "AI 剧本杀", desc: "多 Agent 推理解谜" },
               { href: "/world/screen", icon: "🌍", title: "开放世界", desc: "像素 RPG，Agent 自由探索" },
+              { href: "/telephone", icon: "📞", title: "传话游戏", desc: "消息经 N 个 Agent 传递，看变成啥" },
+              { href: "/debate", icon: "⚖️", title: "AI 辩论赛", desc: "Agent 正反对决，观众投票" },
             ].map(game => (
               <Link key={game.href} href={game.href}
                 className="bg-white/5 rounded-2xl p-5 border border-white/5 hover:border-violet-500/20 hover:bg-white/[0.07] transition-all group">
