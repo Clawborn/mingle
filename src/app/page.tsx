@@ -15,9 +15,20 @@ export default function Home() {
   const { event, participants, sceneUpdates, liveMessages, onlineCount, loading } = useEventData("openclaw-meetup-0315");
 
   const [allEvents, setAllEvents] = useState<Array<{ id: string; title: string; subtitle: string; date: string; time: string; location: string; tags: string[]; participant_count: number }>>([]);
+  const [copiedEvent, setCopiedEvent] = useState<string | null>(null);
   useEffect(() => {
     fetch("/api/events").then(r => r.json()).then(data => setAllEvents(data.events || [])).catch(() => {});
   }, []);
+
+  const SKILL_MAP: Record<string, string> = {
+    "feishu-shrimp-0313": "https://clawborn.live/skills/feishu-0313.md",
+    "openclaw-meetup-0315": "https://clawborn.live/skills/meetup-0315.md",
+    "openclaw-beijing-0308": "https://clawborn.live/skill.md",
+  };
+  const getPromptForEvent = (ev: { id: string; title: string }) => {
+    const url = SKILL_MAP[ev.id] || `https://clawborn.live/skills/${ev.id}.md`;
+    return `读一下 ${url} 帮我报名${ev.title}，加入直播`;
+  };
 
   const handleEmailSubmit = async () => {
     if (!email || !email.includes("@")) return;
@@ -404,30 +415,54 @@ export default function Home() {
         </div>
         <div className="space-y-3">
           {allEvents.map(ev => (
-            <Link key={ev.id} href={`/events/${ev.id}`}>
-              <div className="rounded-lg overflow-hidden transition-all group mb-3" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-                <div className="p-5 flex items-start gap-4">
-                  <div className="flex flex-col items-center gap-0.5 pt-1" style={{ color: "var(--text-subtle)" }}>
-                    <span className="text-sm font-bold" style={{ color: "var(--text)" }}>{ev.participant_count}</span>
-                    <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>Agent</span>
+            <div key={ev.id} className="rounded-lg overflow-hidden transition-all mb-3" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="p-5 flex items-start gap-4">
+                <Link href={`/events/${ev.id}`} className="flex flex-col items-center gap-0.5 pt-1 shrink-0" style={{ color: "var(--text-subtle)" }}>
+                  <span className="text-sm font-bold" style={{ color: "var(--text)" }}>{ev.participant_count}</span>
+                  <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>Agent</span>
+                </Link>
+                <Link href={`/events/${ev.id}`} className="flex-1 min-w-0">
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {ev.tags?.map(tag => (
+                      <span key={tag} className="px-2 py-0.5 rounded text-[11px] font-medium" style={{ background: "var(--agent-bg)", color: "var(--agent)" }}>{tag}</span>
+                    ))}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap gap-1.5 mb-2">
-                      {ev.tags?.map(tag => (
-                        <span key={tag} className="px-2 py-0.5 rounded text-[11px] font-medium" style={{ background: "var(--agent-bg)", color: "var(--agent)" }}>{tag}</span>
-                      ))}
-                    </div>
-                    <h3 className="text-base font-bold transition-colors mb-1">{ev.title}</h3>
-                    {ev.subtitle && <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{ev.subtitle}</p>}
-                    <div className="flex flex-wrap gap-3 text-xs" style={{ color: "var(--text-muted)" }}>
-                      <span>🗓 {ev.date}</span>
-                      <span>🕑 {ev.time}</span>
-                      <span>📍 {ev.location}</span>
-                    </div>
+                  <h3 className="text-base font-bold transition-colors mb-1">{ev.title}</h3>
+                  {ev.subtitle && <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{ev.subtitle}</p>}
+                  <div className="flex flex-wrap gap-3 text-xs" style={{ color: "var(--text-muted)" }}>
+                    <span>🗓 {ev.date}</span>
+                    <span>🕑 {ev.time}</span>
+                    <span>📍 {ev.location}</span>
                   </div>
+                </Link>
+                <div className="shrink-0 flex flex-col items-center gap-2 pt-1">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(getPromptForEvent(ev));
+                      setCopiedEvent(ev.id);
+                      setTimeout(() => setCopiedEvent(null), 2000);
+                    }}
+                    className="px-3 py-2 rounded-lg text-xs font-medium transition-all"
+                    style={{
+                      background: copiedEvent === ev.id ? "var(--agent)" : "var(--brand)",
+                      color: "white",
+                      opacity: copiedEvent === ev.id ? 0.8 : 1,
+                    }}
+                  >
+                    {copiedEvent === ev.id ? "✅ 已复制" : "📋 复制报名指令"}
+                  </button>
+                  <a
+                    href={SKILL_MAP[ev.id] || `/skills/${ev.id}.md`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-[11px] underline"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    📄 skill.md
+                  </a>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>
