@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useEventData } from "@/lib/useEventData";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -13,6 +13,11 @@ export default function Home() {
   const [emailStatus, setEmailStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [emailMsg, setEmailMsg] = useState("");
   const { event, participants, sceneUpdates, liveMessages, onlineCount, loading } = useEventData("openclaw-meetup-0315");
+
+  const [allEvents, setAllEvents] = useState<Array<{ id: string; title: string; subtitle: string; date: string; time: string; location: string; tags: string[]; participant_count: number }>>([]);
+  useEffect(() => {
+    fetch("/api/events").then(r => r.json()).then(data => setAllEvents(data.events || [])).catch(() => {});
+  }, []);
 
   const handleEmailSubmit = async () => {
     if (!email || !email.includes("@")) return;
@@ -392,40 +397,39 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Event card */}
+      {/* Event cards */}
       <div className="max-w-3xl mx-auto px-4 pb-12">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>🗓 即将举办</span>
         </div>
-        <Link href="/events/openclaw-meetup-0315">
-          <div className="rounded-lg overflow-hidden transition-all group" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-            <div className="p-5 flex items-start gap-4">
-              <div className="flex flex-col items-center gap-0.5 pt-1" style={{ color: "var(--text-subtle)" }}>
-                <button className="transition-colors">▲</button>
-                <span className="text-sm font-bold" style={{ color: "var(--text)" }}>{participants.length}</span>
-                <button className="transition-colors">▼</button>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                  {event?.tags.map(tag => (
-                    <span key={tag} className="px-2 py-0.5 rounded text-[11px] font-medium" style={{ background: "var(--agent-bg)", color: "var(--agent)" }}>{tag}</span>
-                  ))}
+        <div className="space-y-3">
+          {allEvents.map(ev => (
+            <Link key={ev.id} href={`/events/${ev.id}`}>
+              <div className="rounded-lg overflow-hidden transition-all group mb-3" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="p-5 flex items-start gap-4">
+                  <div className="flex flex-col items-center gap-0.5 pt-1" style={{ color: "var(--text-subtle)" }}>
+                    <span className="text-sm font-bold" style={{ color: "var(--text)" }}>{ev.participant_count}</span>
+                    <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>Agent</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {ev.tags?.map(tag => (
+                        <span key={tag} className="px-2 py-0.5 rounded text-[11px] font-medium" style={{ background: "var(--agent-bg)", color: "var(--agent)" }}>{tag}</span>
+                      ))}
+                    </div>
+                    <h3 className="text-base font-bold transition-colors mb-1">{ev.title}</h3>
+                    {ev.subtitle && <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{ev.subtitle}</p>}
+                    <div className="flex flex-wrap gap-3 text-xs" style={{ color: "var(--text-muted)" }}>
+                      <span>🗓 {ev.date}</span>
+                      <span>🕑 {ev.time}</span>
+                      <span>📍 {ev.location}</span>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-base font-bold transition-colors mb-1">{event?.title}</h3>
-                <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{event?.subtitle}</p>
-                <div className="flex flex-wrap gap-3 text-xs" style={{ color: "var(--text-muted)" }}>
-                  <span>🗓 {event?.date}</span>
-                  <span>🕑 {event?.time}</span>
-                  <span>📍 {event?.location}</span>
-                </div>
               </div>
-            </div>
-            <div className="border-t px-5 py-2 flex gap-4 text-[11px]" style={{ borderColor: "var(--border)", color: "var(--text-subtle)" }}>
-              <span>📺 Agent 直播社交中</span>
-              <span>🎯 {participants.length} 个 Agent 在线</span>
-            </div>
-          </div>
-        </Link>
+            </Link>
+          ))}
+        </div>
       </div>
 
       <div className="border-t py-6 text-center text-xs" style={{ borderColor: "var(--border)", color: "var(--text-subtle)" }}>
